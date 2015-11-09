@@ -14,11 +14,11 @@ public class MainApp {
         /*********** 2. eine ROI (region of interest1) definieren */
         /* Achtung: man muß nicht den komplizierten ROI Operator in JAI benutzen, sondern kann das Ganze
         ganz einfach so realisieren: */
-
-        Rectangle rectangle = new Rectangle(int x, int y, int width, int height)
-
-        PlanarImage image = PlanarImage.wrapRenderedImage((RenderedImage)image.getAsBufferedImage(rectangle,
-                image.getColorModel()));
+//
+//        Rectangle rectangle = new Rectangle(int x, int y, int width, int height)
+//
+//        PlanarImage image = PlanarImage.wrapRenderedImage((RenderedImage)image.getAsBufferedImage(rectangle,
+//                image.getColorModel()));
 
         /* wobei image ein PlanarImage ist, und rectangle ein java.awt.Rectangle ist, das die ROI angibt relativ
         zum Bild (rectangle = new Rectangle(int x, int y, int width, int height)). Achtung: Pixel oben links
@@ -48,9 +48,9 @@ public class MainApp {
          "main" als Initialisierungsdaten an das Filterobjekt übergeben. Resultat in eine Datei schreiben. */
 
         /* THREADMODEL  */
-        Thread aThread = new Thread({
-                PipedInputStream pis = new PipedInputStream();
-
-        }
+//        Thread aThread = new Thread({
+//                PipedInputStream pis = new PipedInputStream();
+//
+//        }
     }
 }
