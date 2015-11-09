@@ -1,3 +1,5 @@
+package imageanalyzer;
+
 import javax.media.jai.PlanarImage;
 import java.awt.*;
 import java.awt.Rectangle;

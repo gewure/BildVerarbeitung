@@ -45,7 +45,7 @@
                             </descriptorRefs>
                             <archive>
                                 <manifest>
-                                    <mainClass>MainApp</mainClass>
+                                    <mainClass>imageanalyzer.MainApp</mainClass>
                                 </manifest>
                             </archive>
                         </configuration>
@@ -54,4 +54,28 @@
             </plugin>
         </plugins>
     </build>
+
+    <dependencies>
+        <dependency>
+            <groupId>jai</groupId>
+            <artifactId>jai.codec</artifactId>
+            <version>1.0</version>
+            <scope>system</scope>
+            <systemPath>${project.basedir}/libs/jai_codec.jar</systemPath>
+        </dependency>
+        <dependency>
+            <groupId>jai</groupId>
+            <artifactId>jai.core</artifactId>
+            <version>1.0</version>
+            <scope>system</scope>
+            <systemPath>${project.basedir}/libs/jai_core.jar</systemPath>
+        </dependency>
+        <dependency>
+            <groupId>jai</groupId>
+            <artifactId>jai.mlibwrapper</artifactId>
+            <version>1.0</version>
+            <scope>system</scope>
+            <systemPath>${project.basedir}/libs/mlibwrapper_jai.jar</systemPath>
+        </dependency>
+    </dependencies>
 </project>
