@@ -1,27 +1,41 @@
 package imageanalyzer;
 
+import imageanalyzer.datacontainers.ImageVisualizer;
+import imageanalyzer.filters.VisualizationFilter;
+import imageanalyzer.pipes.ImageSourcePipe;
+
 import javax.media.jai.JAI;
-import javax.media.jai.KernelJAI;
 import javax.media.jai.PlanarImage;
 import java.awt.*;
+import java.awt.Rectangle;
 import java.awt.image.RenderedImage;
-import java.awt.image.renderable.ParameterBlock;
 import java.io.File;
+import java.io.PipedInputStream;
+import java.lang.Thread;
 
 public class MainApp {
 
+    private static final String IMAGE_FILE_PATH = "loetstellen.jpg";
+
     public static void main(String[] args) {
+
+        new Thread(
+                new VisualizationFilter(ImageVisualizer::displayImage, new ImageSourcePipe(IMAGE_FILE_PATH))
+        ).start();
 
 
         /*********** 1. das Bild laden und visualisieren */
 
-        PlanarImage image = JAI.create("fileload", "loetstellen.jpg");
+        PlanarImage image = JAI.create("fileload", "src/main/resources/loetstellen.jpg");
+
 
         /*********** 2. eine ROI (region of interest1) definieren */
         /* Achtung: man muß nicht den komplizierten ROI Operator in JAI benutzen, sondern kann das Ganze
         ganz einfach so realisieren: */
 
-        Rectangle rectangle = new Rectangle(0, 35, 448 , 105);
+
+
+        Rectangle rectangle = new Rectangle(0, 35, 448, 105);
         // linkes oberes eck: 0, 35
         // rechtes oberes eck: 448, 35
         // linkes unteres eck: 0, 140
