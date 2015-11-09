@@ -5,13 +5,12 @@ import imageanalyzer.filters.VisualizationFilter;
 import imageanalyzer.pipes.ImageSourcePipe;
 
 import javax.media.jai.JAI;
+import javax.media.jai.KernelJAI;
 import javax.media.jai.PlanarImage;
 import java.awt.*;
-import java.awt.Rectangle;
 import java.awt.image.RenderedImage;
+import java.awt.image.renderable.ParameterBlock;
 import java.io.File;
-import java.io.PipedInputStream;
-import java.lang.Thread;
 
 public class MainApp {
 
