@@ -1,4 +1,4 @@
-package imageanalyzer;/* this filter expects the bonding discs to be completely white: pixel value of 255 on a scale of 0..255
+package imageanalyzer.filters;/* this filter expects the bonding discs to be completely white: pixel value of 255 on a scale of 0..255
  * all other pixels in the image are expected to have a pixel value < 255
  * use this filter adapting eventually the package name 
  */
