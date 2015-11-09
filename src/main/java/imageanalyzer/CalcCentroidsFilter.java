@@ -34,13 +34,10 @@ public class CalcCentroidsFilter extends DataEnrichmentFilter<PlanarImage, Linke
 	@Override
 	protected boolean fillEntity(PlanarImage nextVal, LinkedList<Coordinate> entity) {
 		_image = nextVal;
-		Coordinate[] centroids = process(nextVal);
 
-		for (Coordinate c : centroids){
-			entity.add(c);
-		}
+        Collections.addAll(entity, process(nextVal));
 
-		return true;
+        return true;
 	}
 
 	@Override
@@ -116,8 +113,11 @@ public class CalcCentroidsFilter extends DataEnrichmentFilter<PlanarImage, Linke
 			int xMedian = xValues.get(xValues.size() / 2);
 			int yMedian = yValues.get(yValues.size() / 2);
 
-			centroids[i] = new Coordinate(xMedian+ (int)_image.getProperty("ThresholdX"), yMedian + (int) _image.getProperty("ThresholdY"));
-			i++;
+			centroids[i] = new Coordinate(
+                xMedian + (int) _image.getProperty("ThresholdX"),
+                yMedian + (int) _image.getProperty("ThresholdY")
+            );
+			++i;
 		}
 		return centroids;
 	}
