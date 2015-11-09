@@ -2,7 +2,6 @@
  * all other pixels in the image are expected to have a pixel value < 255
  * use this filter adapting eventually the package name 
  */
-package imageProcessing.filters;
 
 import java.awt.image.BufferedImage;
 import java.security.InvalidParameterException;
