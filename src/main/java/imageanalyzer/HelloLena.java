@@ -1,12 +1,13 @@
 package imageanalyzer;
 
+import com.sun.media.jai.widget.DisplayJAI;
+
+import javax.media.jai.JAI;
+import javax.media.jai.KernelJAI;
+import javax.media.jai.PlanarImage;
+import javax.swing.*;
 import java.awt.*;
 import java.awt.image.renderable.ParameterBlock;
-
-import javax.media.jai.*;
-import javax.swing.*;
-
-import com.sun.media.jai.widget.DisplayJAI;
 
 public class HelloLena {
     public static void main(String[] args) {
@@ -14,9 +15,7 @@ public class HelloLena {
         // the application.
         float[] kernelMatrix;
         KernelJAI kernel = null;
-        kernelMatrix = new float[]{0, -1, 0,
-                -1, 8, -1,
-                0, -1, 0};
+        kernelMatrix = new float[]{0, -1, 0, -1, 8, -1, 0, -1, 0};
 
         kernel = new KernelJAI(3, 3, kernelMatrix);
 

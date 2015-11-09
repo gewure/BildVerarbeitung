@@ -1,9 +1,11 @@
 package imageanalyzer;
 
 import javax.media.jai.JAI;
+import javax.media.jai.KernelJAI;
 import javax.media.jai.PlanarImage;
 import java.awt.*;
 import java.awt.image.RenderedImage;
+import java.awt.image.renderable.ParameterBlock;
 import java.io.File;
 
 public class MainApp {
@@ -13,13 +15,13 @@ public class MainApp {
 
         /*********** 1. das Bild laden und visualisieren */
 
-        PlanarImage image = JAI.create("fileload", "src/main/resources/loetstellen.jpg");
+        PlanarImage image = JAI.create("fileload", "loetstellen.jpg");
 
         /*********** 2. eine ROI (region of interest1) definieren */
         /* Achtung: man muß nicht den komplizierten ROI Operator in JAI benutzen, sondern kann das Ganze
         ganz einfach so realisieren: */
 
-        Rectangle rectangle = new Rectangle(int x, int y, int width, int height); //
+        Rectangle rectangle = new Rectangle(0, 35, 448 , 105);
         // linkes oberes eck: 0, 35
         // rechtes oberes eck: 448, 35
         // linkes unteres eck: 0, 140
@@ -34,8 +36,16 @@ public class MainApp {
         Position dieses Pixels im Originalbild mitspeichern im Bild (der letzte Filter braucht das!)
         Option für den Benutzer: zeige das Rechteck in weiss mit dem Ausgangsbild */
 
-        /*********** 3. einen Operator zur Bildsegmentierung auswählen: Threshold Operator /*
+        /*********** 3. einen Operator zur Bildsegmentierung auswählen: Threshold Operator */
+       float[] kernelMatrix;
 
+        KernelJAI kernel = null;
+        kernelMatrix = new float[]{0, -1, 0, -1, 8, -1, 0, -1, 0};
+        kernel = new KernelJAI(3, 3, kernelMatrix);
+
+        ParameterBlock pb = new ParameterBlock();
+        pb.addSource(image);
+        pb.add(kernel);
         /*********** 3a. Parameterwerte des Operators wählen */
 
         /*********** 4. beseitige lokale Störungen (z.B. schwarzer Fleck im 2. Anschluss von rechts) */
