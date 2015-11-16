@@ -20,6 +20,18 @@ public class MainApp {
     private static final String IMAGE_FILE_PATH = "loetstellen.jpg";
     private static final String RESULT_TXT = "result.txt";
 
+    public void taskApull() {
+        //TODO
+    }
+
+    public void taskApush() {
+        //TODO
+    }
+
+    public void taskB() {
+        //Threaded!
+    }
+
     public static void main(String[] args) {
 
         LinkedList<Coordinate> centroids = new LinkedList<>();
