@@ -16,6 +16,23 @@ public class MainApp {
 
     private static final String IMAGE_FILE_PATH = "loetstellen.jpg";
 
+    // Von Michael Troy: TODO use catalina for this - switch to catalina? integrate
+//    JOptionPane.showMessageDialog(null, _image.toIcon(), "Result", JOptionPane.PLAIN_MESSAGE);
+//
+//    //convert to bufferedImage to crop image
+//    BufferedImage bf = _image.toBufferedImage();
+//    bf = bf.getSubimage(0, 0, 448, 120);
+//
+//    //convert back to fastBitmap and show cropped image
+//    _image = new FastBitmap(bf);
+//    JOptionPane.showMessageDialog(null, _image.toIcon(), "Cropped Result", JOptionPane.PLAIN_MESSAGE);
+//
+//    //_image.toGrayscale();
+//    IntRange colorRange = new IntRange(0, 20);
+//    ReplaceColor replaceColorFilter = new ReplaceColor(colorRange, colorRange, colorRange);
+//    replaceColorFilter.ApplyInPlace(_image, 255, 255, 255);
+//    JOptionPane.showMessageDialog(null, _image.toIcon(), "Cropped removed Black Result", JOptionPane.PLAIN_MESSAGE);
+
     public static void main(String[] args) {
 
         new Thread(
