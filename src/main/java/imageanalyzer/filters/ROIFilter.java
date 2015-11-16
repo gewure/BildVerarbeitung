@@ -1,33 +1,51 @@
 package imageanalyzer.filters;
 
+import imageanalyzer.datacontainers.JAIDrawable;
+import imageanalyzer.util.JAIHelper;
 import thirdparty.filter.DataTransformationFilter;
 import thirdparty.interfaces.Readable;
 import thirdparty.interfaces.Writable;
 
 import javax.media.jai.PlanarImage;
 import java.awt.*;
-import java.awt.image.RenderedImage;
 import java.security.InvalidParameterException;
 
 /**
  * Created by sereGkaluv on 09-Nov-15.
  */
-public class ROIFilter extends DataTransformationFilter<PlanarImage> {
+public class ROIFilter extends DataTransformationFilter<JAIDrawable> {
 
-    public ROIFilter(Readable<PlanarImage> input) throws InvalidParameterException {
-        super(input);
+    private static final String FILTER_NAME = "roi";
+
+    private final Rectangle _roi;
+
+    public ROIFilter(Readable<JAIDrawable> input, Writable<JAIDrawable> output , Rectangle roi)
+    throws InvalidParameterException {
+        super(input, output);
+        _roi = roi;
     }
 
-    public ROIFilter(Writable<PlanarImage> output) throws InvalidParameterException {
+    public ROIFilter(Readable<JAIDrawable> input, Rectangle roi)
+    throws InvalidParameterException {
+        super(input);
+        _roi = roi;
+    }
+
+    public ROIFilter(Writable<JAIDrawable> output, Rectangle roi)
+    throws InvalidParameterException {
         super(output);
+        _roi = roi;
     }
 
     @Override
-    protected void process(PlanarImage entity) {
-        Rectangle rectangle = new Rectangle(0, 35, 448, 105);
+    protected void process(JAIDrawable image) {
+        image.setDrawable(PlanarImage.wrapRenderedImage(
+            image.getDrawable().getAsBufferedImage(
+                _roi,
+                image.getDrawable().getColorModel()
+            )
+        ));
 
-        entity = PlanarImage.wrapRenderedImage(
-            entity.getAsBufferedImage(rectangle, entity.getColorModel())
-        );
+        JAIHelper.saveImage(image.getDrawable(), FILTER_NAME);
     }
 }

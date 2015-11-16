@@ -1,7 +1,5 @@
-package imageanalyzer.filters;/* this filter expects the bonding discs to be completely white: pixel value of 255 on a scale of 0..255
- * all other pixels in the image are expected to have a pixel value < 255
- * use this filter adapting eventually the package name 
- */
+package imageanalyzer.filters;
+
 import java.awt.image.BufferedImage;
 import java.security.InvalidParameterException;
 import java.util.Collections;
@@ -15,6 +13,11 @@ import thirdparty.filter.DataEnrichmentFilter;
 import thirdparty.interfaces.Readable;
 import thirdparty.interfaces.Writable;
 
+/**
+ * This filter expects the bonding discs to be completely white: pixel value of 255 on a scale of 0..255
+ * all other pixels in the image are expected to have a pixel value < 255
+ * use this filter adapting eventually the package name
+ */
 public class CalcCentroidsFilter extends DataEnrichmentFilter<PlanarImage, LinkedList<Coordinate>>{
 
 	private HashMap<Coordinate, Boolean> _general = new HashMap<>();
@@ -44,8 +47,6 @@ public class CalcCentroidsFilter extends DataEnrichmentFilter<PlanarImage, Linke
 		return new LinkedList<>();
 	}
 
-
-
 	private Coordinate[] process(PlanarImage entity) {
 		BufferedImage bi = entity.getAsBufferedImage();
 
@@ -53,7 +54,8 @@ public class CalcCentroidsFilter extends DataEnrichmentFilter<PlanarImage, Linke
 			for (int y = 0; y < bi.getHeight(); y++){
 				int p = bi.getRaster().getSample(x, y, 0);
 				if (p==255 && _general.containsKey(new Coordinate(x,y)) == false){
-					getNextFigure(bi, x, y);		//if there is a not visited white pixel, save all pixels belonging to the same figure
+					//if there is a not visited white pixel, save all pixels belonging to the same figure
+                    getNextFigure(bi, x, y);
 				}
 			}
 		}
@@ -62,7 +64,7 @@ public class CalcCentroidsFilter extends DataEnrichmentFilter<PlanarImage, Linke
 	}
 
 	private void getNextFigure(BufferedImage img, int x, int y){
-		LinkedList<Coordinate> figure = new LinkedList<Coordinate>();
+		LinkedList<Coordinate> figure = new LinkedList<>();
 		_general.put(new Coordinate(x,y), true);
 		figure.add(new Coordinate(x,y));
 
@@ -98,8 +100,8 @@ public class CalcCentroidsFilter extends DataEnrichmentFilter<PlanarImage, Linke
 		Coordinate[] centroids = new Coordinate[_figures.size()];
 		int i = 0;
 		for (LinkedList<Coordinate> figure : _figures){
-			LinkedList<Integer> xValues= new LinkedList<Integer>();
-			LinkedList<Integer> yValues= new LinkedList<Integer>();
+			LinkedList<Integer> xValues= new LinkedList<>();
+			LinkedList<Integer> yValues= new LinkedList<>();
 
 			for (Coordinate c : figure){
 				xValues.add(c._x);

@@ -43,6 +43,5 @@ public class ImageVisualizer {
 
         frame.setResizable(false);
         frame.setVisible(true); // show the frame.
-
     }
 }

@@ -1,89 +1,91 @@
 package imageanalyzer;
 
+import imageanalyzer.datacontainers.Coordinate;
 import imageanalyzer.datacontainers.ImageVisualizer;
-import imageanalyzer.filters.VisualizationFilter;
+import imageanalyzer.datacontainers.JAIDrawable;
+import imageanalyzer.filters.*;
 import imageanalyzer.pipes.ImageSourcePipe;
+import thirdparty.interfaces.Readable;
+import thirdparty.pipes.BufferedSyncPipe;
 
-import javax.media.jai.JAI;
-import javax.media.jai.PlanarImage;
 import java.awt.*;
-import java.awt.Rectangle;
-import java.awt.image.RenderedImage;
-import java.io.File;
-import java.io.PipedInputStream;
-import java.lang.Thread;
+import java.io.StreamCorruptedException;
+import java.util.LinkedList;
+
 
 public class MainApp {
 
+    private static final int BUFFER_SIZE = 1;
     private static final String IMAGE_FILE_PATH = "loetstellen.jpg";
 
     public static void main(String[] args) {
 
-        new Thread(
-                new VisualizationFilter(ImageVisualizer::displayImage, new ImageSourcePipe(IMAGE_FILE_PATH))
-        ).start();
+        LinkedList<Coordinate> centroids = new LinkedList<>();
+        centroids.add(new Coordinate(5, 50)); //TODO
 
 
-        /*********** 1. das Bild laden und visualisieren */
+        Readable<JAIDrawable> sourcePipe = new ImageSourcePipe(IMAGE_FILE_PATH);
+        BufferedSyncPipe<JAIDrawable> roiPipe = new BufferedSyncPipe<>(BUFFER_SIZE);
+        BufferedSyncPipe<JAIDrawable> thresholdPipe = new BufferedSyncPipe<>(BUFFER_SIZE);
+        BufferedSyncPipe<JAIDrawable> medianPipe = new BufferedSyncPipe<>(BUFFER_SIZE);
+        BufferedSyncPipe<JAIDrawable> openingPipe = new BufferedSyncPipe<>(BUFFER_SIZE);
+        BufferedSyncPipe<JAIDrawable> blackWhitePipe = new BufferedSyncPipe<>(BUFFER_SIZE);
+        BufferedSyncPipe<JAIDrawable> centroidsPipe = new BufferedSyncPipe<>(BUFFER_SIZE);
+
+        new ROIFilter(
+            sourcePipe,
+            roiPipe,
+            new Rectangle(0, 35, 448, 105)
+        );
+
+        new ThresholdFilter(
+            roiPipe,
+            thresholdPipe,
+            new double[] {0},
+            new double[] {25},
+            new double[] {255}
+        );
+
+        new MedianFilter(
+            thresholdPipe,
+            medianPipe,
+            8
+        );
+
+        new OpeningFilter(
+            medianPipe,
+            openingPipe
+        );
+
+        new ThresholdFilter(
+            openingPipe,
+            blackWhitePipe,
+            new double[] {0},
+            new double[] {250},
+            new double[] {0}
+        );
 
 
-
-        PlanarImage image = JAI.create("fileload", "src/main/resources/loetstellen.jpg");
-
-
-        /*********** 2. eine ROI (region of interest1) definieren */
-        /* Achtung: man muß nicht den komplizierten ROI Operator in JAI benutzen, sondern kann das Ganze
-        ganz einfach so realisieren: */
+        new InversionFilter(
+            blackWhitePipe,
+            centroidsPipe
+        );
 
 
+        VisualizationFilter vf = new VisualizationFilter(
+            (Readable<JAIDrawable>) centroidsPipe,
+            ImageVisualizer::displayImage
+        );
 
-        Rectangle rectangle = new Rectangle(0, 35, 448, 105);
-        // linkes oberes eck: 0, 35
-        // rechtes oberes eck: 448, 35
-        // linkes unteres eck: 0, 140
-        // rechtes untere eck: 448, 140
+        try {
+            vf.read();
+        } catch (StreamCorruptedException e) {
+            e.printStackTrace();
+        }
 
-         image = PlanarImage.wrapRenderedImage((RenderedImage)image.getAsBufferedImage(rectangle,
-                image.getColorModel()));
+//        new Thread(
+//            new CalcCentroidsFilter(blackWhitePipe.)
+//        ).start();
 
-        /* wobei image ein PlanarImage ist, und rectangle ein java.awt.Rectangle ist, das die ROI angibt relativ
-        zum Bild (rectangle = new Rectangle(int x, int y, int width, int height)). Achtung: Pixel oben links
-        usgeschnittenen Bildes hat wieder die Koordinaten 0,0. Sie müssen noch etwas tun, damit Sie die
-        Position dieses Pixels im Originalbild mitspeichern im Bild (der letzte Filter braucht das!)
-        Option für den Benutzer: zeige das Rechteck in weiss mit dem Ausgangsbild */
-
-        /*********** 3. einen Operator zur Bildsegmentierung auswählen: Threshold Operator /*
-
-        /*********** 3a. Parameterwerte des Operators wählen */
-
-        /*********** 4. beseitige lokale Störungen (z.B. schwarzer Fleck im 2. Anschluss von rechts) */
-
-        /*********** 4a.wähle Parameter des Filters: Größe der Maske zur Medianberechnung */
-
-        /*********** 5. nun bleiben noch die Kabelanschlüsse der „balls“; man nutzt die Kreisform der Balls aus und
-        benutzt einen Opening-Operator mit kreisförmiger Maske (in JAI: "erode" und „dilate“): */
-
-        /**********  5a. wähle Parameter des Operators: Größe der Maske (Alternative: laufe mehrmals mit dem Operator
-        über das Bild) */
-
-        /********** 6.Resultatbild (ein Bild, in dem nur die „balls“ als Scheiben zu sehen sind.)in einer Datei abspeichern,
-        aber nicht als Sink realisieren, sondern nach der Abspeicherung das unveränderte Bild weiterleiten. */
-
-        /********** 7.ie Scheiben zählen, ihre Zentren (Centroid, siehe unten) bestimmen, und prüfen, ob sie im
-         Toleranzbereich der Qualitätskontrolle liegen. Letztere Information wird bei Erzeugung des Filters im
-         "main" als Initialisierungsdaten an das Filterobjekt übergeben. Resultat in eine Datei schreiben. */
-        // -> CalcCentroidsFilter.java(PlanarImage, LinkedList<Coordinate>
-
-        File result = new File("result.txt"); // result for Task A)
-
-        // Im letzten Filter sollen die Mittelpunkte der
-        //"balls" bestimmt, mit Sollwerten verglichen, und das Resultat in einer einfachen Textdatei
-        //abgespeichert werden
-
-        /* THREADMODEL  */
-//        Thread aThread = new Thread({
-//                PipedInputStream pis = new PipedInputStream();
-//
-//        }
     }
 }
