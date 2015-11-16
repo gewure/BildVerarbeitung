@@ -32,9 +32,10 @@ public class MainApp {
         //Threaded!
     }
 
+    @Deprecated
     public static void main(String[] args) {
 
-        /* the should-values of the 'centroids' */
+        /* the should-coordinates of the 'centroids' */
         LinkedList<Coordinate> centroids = new LinkedList<>();
         centroids.add(new Coordinate(8, 80));
         centroids.add(new Coordinate(72, 80));
@@ -43,7 +44,6 @@ public class MainApp {
         centroids.add(new Coordinate(266, 85));
         centroids.add(new Coordinate(329, 85));
         centroids.add(new Coordinate(396, 85));
-
 
         Readable<JAIDrawable> sourcePipe = new ImageSourcePipe(IMAGE_FILE_PATH);
         BufferedSyncPipe<JAIDrawable> roiPipe = new BufferedSyncPipe<>(BUFFER_SIZE);
@@ -104,9 +104,9 @@ public class MainApp {
                 ImageVisualizer::displayImage
         );
 
-        /* TODO count the Lötstellen, find the center and write the difference between should and is into a file */
+        /* TODO write the difference between should and is into a file */
         File resultTxt = new File(RESULT_TXT);
-        new LoetstellenCounterFilter(
+        new CheckResultsSink(
                 centroidsPipe,
                 resultTxt
         );
