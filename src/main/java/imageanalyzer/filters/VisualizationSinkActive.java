@@ -16,7 +16,7 @@ public class VisualizationSinkActive implements Readable<JAIDrawable>, Runnable 
     private final Consumer<PlanarImage> _visualisationConsumer;
 
     public VisualizationSinkActive(Readable<JAIDrawable> input, Consumer<PlanarImage> visualisationConsumer)
-            throws InvalidParameterException {
+    throws InvalidParameterException {
         _input = input;
         _visualisationConsumer = visualisationConsumer;
     }

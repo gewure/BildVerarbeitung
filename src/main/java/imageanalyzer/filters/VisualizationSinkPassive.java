@@ -13,21 +13,19 @@ import java.util.function.Consumer;
  * Created by sereGkaluv on 09-Nov-15.
  */
 public class VisualizationSinkPassive implements Writable<JAIDrawable> {
-    private final Readable<JAIDrawable> _input;
     private final Consumer<PlanarImage> _visualisationConsumer;
 
-    public VisualizationSinkPassive(Readable<JAIDrawable> input, Consumer<PlanarImage> visualisationConsumer)
+    public VisualizationSinkPassive(Consumer<PlanarImage> visualisationConsumer)
     throws InvalidParameterException {
-        _input = input;
         _visualisationConsumer = visualisationConsumer;
     }
 
     @Override
     public void write(JAIDrawable value) throws StreamCorruptedException {
-        if (_input != null && _visualisationConsumer != null) {
-            _visualisationConsumer.accept(_input.read().getDrawable());
+        if (_visualisationConsumer != null) {
+            _visualisationConsumer.accept(value.getDrawable());
         } else {
-            throw new StreamCorruptedException("input source is null");
+            throw new NullPointerException("visualisation consumer is not registered");
         }
     }
 }
