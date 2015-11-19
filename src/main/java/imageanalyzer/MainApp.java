@@ -11,8 +11,7 @@ import thirdparty.pipes.BufferedSyncPipe;
 import java.awt.*;
 import java.io.File;
 import java.io.StreamCorruptedException;
-import java.util.LinkedList;
-
+import java.util.ArrayList;
 
 public class MainApp {
 
@@ -20,32 +19,23 @@ public class MainApp {
     private static final String IMAGE_FILE_PATH = "loetstellen.jpg";
     private static final String RESULT_TXT = "result.txt";
 
+    /* the target-coordinates of the 'centroids' in the image */
+    ArrayList<Coordinate> targetCentroids = new ArrayList<Coordinate>() {{
+        add(new Coordinate(8, 80));
+         add(new Coordinate(72, 80));
+        add(new Coordinate(137, 83));
+        add(new Coordinate(203, 84));
+        add(new Coordinate(266, 85));
+        add(new Coordinate(329, 85));
+        add(new Coordinate(396, 85));
+    }};
+
+    /**
+     * pull strategy
+     */
     public void taskApull() {
-        //TODO
-    }
 
-    public void taskApush() {
-        //TODO
-    }
-
-    public void taskB() {
-        //Threaded!
-    }
-
-    @Deprecated
-    public static void main(String[] args) {
-
-        /* the should-coordinates of the 'centroids' */
-        LinkedList<Coordinate> centroids = new LinkedList<>();
-        centroids.add(new Coordinate(8, 80));
-        centroids.add(new Coordinate(72, 80));
-        centroids.add(new Coordinate(137, 83));
-        centroids.add(new Coordinate(203, 84));
-        centroids.add(new Coordinate(266, 85));
-        centroids.add(new Coordinate(329, 85));
-        centroids.add(new Coordinate(396, 85));
-
-        Readable<JAIDrawable> sourcePipe = new ImageSourcePipe(IMAGE_FILE_PATH);
+        thirdparty.interfaces.Readable<JAIDrawable> sourcePipe = new ImageSourcePipe(IMAGE_FILE_PATH);
         BufferedSyncPipe<JAIDrawable> roiPipe = new BufferedSyncPipe<>(BUFFER_SIZE);
         BufferedSyncPipe<JAIDrawable> thresholdPipe = new BufferedSyncPipe<>(BUFFER_SIZE);
         BufferedSyncPipe<JAIDrawable> medianPipe = new BufferedSyncPipe<>(BUFFER_SIZE);
@@ -82,7 +72,7 @@ public class MainApp {
                 openingPipe
         );
 
-        /* Threshold Filter again and Inversion to eleminate every else around our loetstellen */
+        /* Threshold Filter again and Inversion to eleminate everything else around our loetstellen */
         new ThresholdFilter(
                 openingPipe,
                 blackWhitePipe,
@@ -91,36 +81,63 @@ public class MainApp {
                 new double[]{0}
         );
 
-
+        /* invert */
         new InversionFilter(
                 blackWhitePipe,
                 centroidsPipe
         );
 
-
-        /* visualize it! */
+        /* visualize it */
         VisualizationFilter vf = new VisualizationFilter(
                 (Readable<JAIDrawable>) centroidsPipe,
                 ImageVisualizer::displayImage
         );
 
-        /* TODO write the difference between should and is into a file */
+        /* file where the Differences between the should-and-is Coordinates is written*/
         File resultTxt = new File(RESULT_TXT);
-        new CheckResultsSink(
-                centroidsPipe,
-                resultTxt
-        );
+
+        /* get the Centroids TODO*/
+        //CalcCentroidsFilter calcCentroidsFilter = new CalcCentroidsFilter(planImageToCalcFrom, new ActiveFileSink(resultTxt));
+
+        //TODO
+//        new CheckResultsSink(
+//                centroidsPipe,
+//                resultTxt
+//        );
 
         try {
             vf.read();
         } catch (StreamCorruptedException e) {
             e.printStackTrace();
         }
+    }
 
-//        new Thread(
-//            new CalcCentroidsFilter(blackWhitePipe.)
-//        ).start();
+    /**
+     * push strategy
+     */
+    public void taskApush() {
+        //TODO
+    }
 
+    /**
+     * multithreaded
+     */
+    public void taskB() {
+        //Threaded!
+    }
+
+    @Deprecated
+    public static void main(String[] args) {
+        MainApp mainApp= new MainApp();
+
+        if (args[0]=="push")
+            mainApp.taskApush();
+
+        if(args[0]=="pull")
+            mainApp.taskApull();
+
+        if(args[0]=="threaded")
+            mainApp.taskB();
 
     }
 }
