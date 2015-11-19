@@ -1,4 +1,4 @@
-package thirdparty.pipes;
+package imageanalyzer.pipes;
 
 import thirdparty.interfaces.IOable;
 import thirdparty.interfaces.Writable;
@@ -33,11 +33,17 @@ public class Pipe<T> implements IOable<T, T> {
 
     @Override
     public T read() throws StreamCorruptedException {
-        return null;
+        if (input == null) {
+            throw new StreamCorruptedException();
+        }
+        return input.read();
     }
 
     @Override
     public void write(T value) throws StreamCorruptedException {
-
+        if (output == null) {
+            throw new StreamCorruptedException();
+        }
+        output.write(value);
     }
 }

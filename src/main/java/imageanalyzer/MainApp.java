@@ -4,12 +4,12 @@ import imageanalyzer.datacontainers.Coordinate;
 import imageanalyzer.datacontainers.ImageVisualizer;
 import imageanalyzer.datacontainers.JAIDrawable;
 import imageanalyzer.filters.*;
-import imageanalyzer.pipes.ImageSourcePipe;
+import imageanalyzer.filters.SourcePassive;
 import thirdparty.interfaces.Readable;
-import thirdparty.pipes.BufferedSyncPipe;
+import thirdparty.interfaces.Writable;
+import imageanalyzer.pipes.Pipe;
 
 import java.awt.*;
-import java.io.StreamCorruptedException;
 import java.util.LinkedList;
 
 
@@ -24,64 +24,53 @@ public class MainApp {
         centroids.add(new Coordinate(5, 50)); //TODO
 
 
-        Readable<JAIDrawable> sourcePipe = new ImageSourcePipe(IMAGE_FILE_PATH);
-        BufferedSyncPipe<JAIDrawable> roiPipe = new BufferedSyncPipe<>(BUFFER_SIZE);
-        BufferedSyncPipe<JAIDrawable> thresholdPipe = new BufferedSyncPipe<>(BUFFER_SIZE);
-        BufferedSyncPipe<JAIDrawable> medianPipe = new BufferedSyncPipe<>(BUFFER_SIZE);
-        BufferedSyncPipe<JAIDrawable> openingPipe = new BufferedSyncPipe<>(BUFFER_SIZE);
-        BufferedSyncPipe<JAIDrawable> blackWhitePipe = new BufferedSyncPipe<>(BUFFER_SIZE);
-        BufferedSyncPipe<JAIDrawable> centroidsPipe = new BufferedSyncPipe<>(BUFFER_SIZE);
+        Readable<JAIDrawable> sourcePipe = new SourcePassive(IMAGE_FILE_PATH);
 
-        new ROIFilter(
-            sourcePipe,
-            roiPipe,
+
+        ROIFilter rf = new ROIFilter(
+            (Readable<JAIDrawable>) sourcePipe,
             new Rectangle(0, 35, 448, 105)
         );
 
-        new ThresholdFilter(
-            roiPipe,
-            thresholdPipe,
+        Pipe<JAIDrawable> roiPipe = new Pipe<>((Writable<JAIDrawable>) rf);
+
+        ThresholdFilter tf = new ThresholdFilter(
+            (Readable<JAIDrawable>) roiPipe,
             new double[] {0},
             new double[] {25},
             new double[] {255}
         );
 
-        new MedianFilter(
-            thresholdPipe,
-            medianPipe,
+        Pipe<JAIDrawable> thresholdPipe = new Pipe<>((Writable<JAIDrawable>) tf);
+
+        MedianFilter mf = new MedianFilter(
+            (Readable<JAIDrawable>) thresholdPipe,
             8
         );
 
-        new OpeningFilter(
-            medianPipe,
-            openingPipe
+        Pipe<JAIDrawable> medianPipe = new Pipe<>((Writable<JAIDrawable>) mf);
+
+        OpeningFilter of = new OpeningFilter(
+            (Readable<JAIDrawable>) medianPipe
         );
 
-        new ThresholdFilter(
-            openingPipe,
-            blackWhitePipe,
+        Pipe<JAIDrawable> openingPipe = new Pipe<>((Writable<JAIDrawable>) of);
+
+        ThresholdFilter bwf = new ThresholdFilter(
+            (Readable<JAIDrawable>) openingPipe,
             new double[] {0},
             new double[] {250},
             new double[] {0}
         );
 
+        Pipe<JAIDrawable> blackWhitePipe = new Pipe<>((Writable<JAIDrawable>) bwf);
 
-        new InversionFilter(
-            blackWhitePipe,
-            centroidsPipe
+        InversionFilter inf = new InversionFilter(
+            (Readable<JAIDrawable>) blackWhitePipe
         );
 
 
-        VisualizationFilter vf = new VisualizationFilter(
-            (Readable<JAIDrawable>) centroidsPipe,
-            ImageVisualizer::displayImage
-        );
-
-        try {
-            vf.read();
-        } catch (StreamCorruptedException e) {
-            e.printStackTrace();
-        }
+        new VisualizationSinkActive(ImageVisualizer::displayImage);
 
 //        new Thread(
 //            new CalcCentroidsFilter(blackWhitePipe.)

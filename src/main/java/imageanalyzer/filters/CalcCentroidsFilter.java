@@ -37,8 +37,9 @@ public class CalcCentroidsFilter extends DataEnrichmentFilter<PlanarImage, Linke
 	protected boolean fillEntity(PlanarImage nextVal, LinkedList<Coordinate> entity) {
 		_image = nextVal;
 
-        Collections.addAll(entity, process(nextVal));
-
+//        Collections.addAll(entity, process(nextVal));
+		process(nextVal);
+		entity = null;
         return true;
 	}
 
