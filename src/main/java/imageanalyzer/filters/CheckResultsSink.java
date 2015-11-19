@@ -13,6 +13,7 @@ import java.util.List;
  */
 public class CheckResultsSink extends ActiveFileSink {
 
+    List<Coordinate> actualCentroids;
     List<Coordinate> targetCentroids;
     List<Coordinate> differences;
 
@@ -41,7 +42,7 @@ public class CheckResultsSink extends ActiveFileSink {
 
     protected void process(Readable entity) {
        for(int i = 0; i< targetCentroids.size(); i++)
-            differences.add(compareCoordinates(targetCentroids.get(i),i));
+            differences.add(compareCoordinates(actualCentroids.get(i),i));
     }
 
     /**
