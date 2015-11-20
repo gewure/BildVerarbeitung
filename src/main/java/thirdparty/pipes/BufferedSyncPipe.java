@@ -1,9 +1,9 @@
 package thirdparty.pipes;
 
+import thirdparty.interfaces.IOable;
+
 import java.io.StreamCorruptedException;
 import java.util.LinkedList;
-
-import thirdparty.interfaces.IOable;
 
 public class BufferedSyncPipe<T> implements IOable<T, T>{
 

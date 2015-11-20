@@ -1,17 +1,16 @@
 package imageanalyzer.filters;
 
+import imageanalyzer.datacontainers.Coordinate;
+import thirdparty.filter.DataEnrichmentFilter;
+import thirdparty.interfaces.Readable;
+import thirdparty.interfaces.Writable;
+
+import javax.media.jai.PlanarImage;
 import java.awt.image.BufferedImage;
 import java.security.InvalidParameterException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
-
-import javax.media.jai.PlanarImage;
-
-import imageanalyzer.datacontainers.Coordinate;
-import thirdparty.filter.DataEnrichmentFilter;
-import thirdparty.interfaces.Readable;
-import thirdparty.interfaces.Writable;
 
 /**
  * This filter expects the bonding discs to be completely white: pixel value of 255 on a scale of 0..255

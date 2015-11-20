@@ -5,10 +5,8 @@ import imageanalyzer.datasources.generic.PassiveSource;
 import imageanalyzer.util.JAIOperators;
 
 import javax.media.jai.JAI;
-import javax.media.jai.PlanarImage;
 import java.io.StreamCorruptedException;
 import java.util.LinkedList;
-import java.util.function.Consumer;
 
 /**
  * Created by sereGkaluv on 09-Nov-15.

@@ -1,7 +1,6 @@
 package imageanalyzer.sinks.generic;
 
 import thirdparty.interfaces.Readable;
-import thirdparty.interfaces.Writable;
 
 import java.io.StreamCorruptedException;
 

@@ -1,10 +1,10 @@
 package thirdparty.filter;
 
-import java.io.StreamCorruptedException;
-import java.security.InvalidParameterException;
-
 import thirdparty.interfaces.Readable;
 import thirdparty.interfaces.Writable;
+
+import java.io.StreamCorruptedException;
+import java.security.InvalidParameterException;
 
 public abstract class DataEnrichmentFilter<in, out>  extends AbstractFilter<in, out> implements Runnable {
 

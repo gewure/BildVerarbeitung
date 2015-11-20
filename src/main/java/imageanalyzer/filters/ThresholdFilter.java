@@ -8,7 +8,6 @@ import thirdparty.interfaces.Readable;
 import thirdparty.interfaces.Writable;
 
 import javax.media.jai.JAI;
-import javax.media.jai.PlanarImage;
 import java.awt.image.renderable.ParameterBlock;
 import java.security.InvalidParameterException;
 
