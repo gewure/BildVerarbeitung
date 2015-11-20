@@ -14,19 +14,25 @@ import java.util.List;
  * Created by f00 on 16.11.15.
  * active-Filter: pulls data himself
  */
-public class ActiveFileSink extends ActiveSink<List<Coordinate>> {
+public class FileSink extends ActiveSink<List<Coordinate>> {
 
     private final List<Coordinate> _targetCentroids;
     private FileWriter _fileWriter;
 
-    /**
-     * Constructor
-     *
-     * @param readable
-     * @param centroids
-     * @param file
-     */
-    public ActiveFileSink(Readable<List<Coordinate>> readable, List<Coordinate> centroids, File file)
+    public FileSink(List<Coordinate> centroids, File file)
+    throws IOException {
+        super();
+
+        _targetCentroids = centroids;
+
+        if (file.exists()) file.delete();
+        if (file.createNewFile()) {
+            _fileWriter = new FileWriter(file);
+            System.out.println("Save results as .txt: " + file.getName());
+        }
+    }
+
+    public FileSink(Readable<List<Coordinate>> readable, List<Coordinate> centroids, File file)
     throws IOException {
         super(readable);
 

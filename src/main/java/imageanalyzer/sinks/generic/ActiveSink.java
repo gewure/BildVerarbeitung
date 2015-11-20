@@ -8,17 +8,22 @@ import java.io.StreamCorruptedException;
  * Created by f00 on 19.11.15.
  */
 public abstract class ActiveSink<T> extends PassiveSink<T> implements Runnable {
-    private final Readable<T> _readable;
+    private Readable<T> _readable;
+
+    protected ActiveSink() {
+        //passive mode
+    }
 
     protected ActiveSink(Readable<T> readable) {
+        //active mode
         _readable = readable;
     }
 
     @Override
     public void run() {
-        try {
+        if (_readable != null) {
 
-            if (_readable != null) {
+            try {
 
                 T input;
 
@@ -27,15 +32,16 @@ public abstract class ActiveSink<T> extends PassiveSink<T> implements Runnable {
                     input = _readable.read();
                     write(input);
 
-                } while(input != null);  //reading and sinking all the data
+                } while (input != null);  //reading and sinking all the data
 
-            } else {
-                throw new StreamCorruptedException("input source is null");
+            } catch (StreamCorruptedException e) {
+                System.out.print("Thread reports error: ");
+                System.out.println(Thread.currentThread().getId() + " (" + Thread.currentThread().getName() + ")");
+                e.printStackTrace();
             }
-        } catch (StreamCorruptedException e) {
-            System.out.print("Thread reports error: ");
-            System.out.println(Thread.currentThread().getId() + " (" + Thread.currentThread().getName() + ")");
-            e.printStackTrace();
+
+        } else {
+            System.out.println("Auto-switched to passive mode. Input is not set.");
         }
     }
 }

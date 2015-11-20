@@ -8,28 +8,40 @@ import java.io.StreamCorruptedException;
  * Created by f00 on 19.11.15.
  */
 public abstract class ActiveSource<T> extends PassiveSource<T> implements Runnable {
-    protected final Writable<T> _writable;
+    private Writable<T> _writable;
+
+    protected ActiveSource() {
+        //passive mode
+    }
 
     protected ActiveSource(Writable<T> writable) {
+        //active mode
         _writable = writable;
     }
 
     @Override
     public void run() {
-        try {
+        if (_writable != null) {
 
-            if (_writable != null) {
+            try {
 
-                _writable.write(read());
+                T input;
 
-            }else {
-                throw new StreamCorruptedException("output source is null");
+                do {
+
+                    input = read();
+                    _writable.write(input);
+
+                } while (input != null); //reading and forwarding all the data
+
+            } catch (StreamCorruptedException e) {
+                System.out.print("Thread reports error: ");
+                System.out.println(Thread.currentThread().getId() + " (" + Thread.currentThread().getName() + ")");
+                e.printStackTrace();
             }
 
-        } catch (StreamCorruptedException e) {
-            System.out.print("Thread reports error: ");
-            System.out.println(Thread.currentThread().getId() + " (" + Thread.currentThread().getName() + ")");
-            e.printStackTrace();
+        } else {
+            System.out.println("Auto-switched to passive mode. Output is not set.");
         }
     }
 }

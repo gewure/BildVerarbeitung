@@ -3,11 +3,9 @@ package imageanalyzer;
 import imageanalyzer.datacontainers.Coordinate;
 import imageanalyzer.datacontainers.ImageVisualizer;
 import imageanalyzer.datacontainers.JAIDrawable;
-import imageanalyzer.datasources.JAIDrawableSourceActive;
-import imageanalyzer.datasources.JAIDrawableSourcePassive;
+import imageanalyzer.datasources.JAIDrawableSource;
 import imageanalyzer.filters.*;
-import imageanalyzer.sinks.ActiveVisualizationSink;
-import imageanalyzer.sinks.PassiveVisualizationSink;
+import imageanalyzer.sinks.VisualizationSink;
 import thirdparty.interfaces.Readable;
 import thirdparty.interfaces.Writable;
 
@@ -37,7 +35,7 @@ public class MainApp {
 
     private static void runPullTaskA() {
         /* Loading the data */
-        JAIDrawableSourcePassive sp = new JAIDrawableSourcePassive(IMAGE_FILE_PATH);
+        JAIDrawableSource sp = new JAIDrawableSource(IMAGE_FILE_PATH);
 
         /* Region Of Interest */
         ROIFilter rf = new ROIFilter(
@@ -77,16 +75,16 @@ public class MainApp {
 
         /* Showing the result */
         new Thread(
-            new ActiveVisualizationSink(inf, ImageVisualizer::displayImage)
+            new VisualizationSink(inf, ImageVisualizer::displayImage)
         ).start();
     }
 
     private static void runPushTaskA() {
         /* Showing the result */
-        PassiveVisualizationSink vf = new PassiveVisualizationSink(ImageVisualizer::displayImage);
+        VisualizationSink vs = new VisualizationSink(ImageVisualizer::displayImage);
 
         /* Inversion of the result all black -> white, all white -> black */
-        InversionFilter inf = new InversionFilter(vf);
+        InversionFilter inf = new InversionFilter(vs);
 
         /* Threshold Filter all except soldering places to black */
         ThresholdFilter bwf = new ThresholdFilter(
@@ -123,7 +121,7 @@ public class MainApp {
 
         /* Loading the data */
         new Thread(
-            new JAIDrawableSourceActive(rf, IMAGE_FILE_PATH)
+            new JAIDrawableSource(rf, IMAGE_FILE_PATH)
         ).start();
     }
 

@@ -11,10 +11,15 @@ import java.util.function.Consumer;
 /**
  * Created by sereGkaluv on 09-Nov-15.
  */
-public class ActiveVisualizationSink extends ActiveSink<JAIDrawable> {
+public class VisualizationSink extends ActiveSink<JAIDrawable> {
     private final Consumer<PlanarImage> _visualisationConsumer;
 
-    public ActiveVisualizationSink(Readable<JAIDrawable> readable, Consumer<PlanarImage> visualisationConsumer) {
+    public VisualizationSink(Consumer<PlanarImage> visualisationConsumer) {
+        super();
+        _visualisationConsumer = visualisationConsumer;
+    }
+
+    public VisualizationSink(Readable<JAIDrawable> readable, Consumer<PlanarImage> visualisationConsumer) {
         super(readable);
         _visualisationConsumer = visualisationConsumer;
     }
