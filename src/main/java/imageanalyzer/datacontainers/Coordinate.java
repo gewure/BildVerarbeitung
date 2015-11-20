@@ -14,18 +14,13 @@ public class Coordinate {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) {
-            return true;
+        if (o == null) return false;
+
+        if (o instanceof Coordinate) {
+            Coordinate c = (Coordinate) o;
+            return _x == c._x && _y == c._y;
         }
-        if (!(o instanceof Coordinate)) {
-            return false;
-        }
-        Coordinate c = (Coordinate) o;
-        if (_x == c._x && _y == c._y) {
-            return true;
-        } else {
-            return false;
-        }
+        return false;
     }
 
     @Override

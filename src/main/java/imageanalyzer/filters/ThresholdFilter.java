@@ -42,7 +42,7 @@ public class ThresholdFilter extends DataTransformationFilter<JAIDrawable> {
     protected void process(JAIDrawable image) {
         ParameterBlock pb = prepareParameterBlock(image, _parameters);
         image.setDrawable(JAI.create(
-            JAIOperators.TRESHHOLD.getOperatorValue(),
+            JAIOperators.THRESHOLD.getOperatorValue(),
             pb
         ));
 

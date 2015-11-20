@@ -4,7 +4,9 @@ package imageanalyzer.util;
  * Created by sereGkaluv on 15-Nov-15.
  */
 public enum JAIOperators {
-    TRESHHOLD("threshold"),
+    THRESHOLD("threshold"),
+    THRESHOLD_X("ThresholdX"),
+    THRESHOLD_Y("ThresholdY"),
     MEDIAN("MedianFilter"),
     ERODE("erode"),
     DILATE("dilate"),

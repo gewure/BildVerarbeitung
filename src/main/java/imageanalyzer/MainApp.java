@@ -11,13 +11,17 @@ import thirdparty.pipes.BufferedSyncPipe;
 
 import javax.media.jai.PlanarImage;
 import java.awt.*;
-import java.io.File;
 import java.lang.management.ManagementFactory;
 import java.util.LinkedList;
 import java.util.List;
 
 public class MainApp {
     private static final int BUFFER_SIZE = 4;
+    private static final int ROI_X = 0;
+    private static final int ROI_Y = 35;
+    private static final int ROI_WIDTH = 448;
+    private static final int ROI_HEIGHT = 85;
+    private static final int MEASUREMENT_ACCURACY = 3;
     private static final String IMAGE_FILE_PATH = "loetstellen.jpg";
     private static final String RESULT_FILE_PATH = "result.txt";
 
@@ -27,13 +31,13 @@ public class MainApp {
         SOLDERING_PLACES = new LinkedList<>();
 
         /* the should-coordinates of the soldering places */
-        SOLDERING_PLACES.add(new Coordinate(8, 80));
-        SOLDERING_PLACES.add(new Coordinate(72, 80));
-        SOLDERING_PLACES.add(new Coordinate(137, 83));
-        SOLDERING_PLACES.add(new Coordinate(203, 84));
-        SOLDERING_PLACES.add(new Coordinate(266, 85));
-        SOLDERING_PLACES.add(new Coordinate(329, 85));
-        SOLDERING_PLACES.add(new Coordinate(396, 85));
+        SOLDERING_PLACES.add(new Coordinate(7, 45));
+        SOLDERING_PLACES.add(new Coordinate(71, 45));
+        SOLDERING_PLACES.add(new Coordinate(135, 45));
+        SOLDERING_PLACES.add(new Coordinate(199, 45));
+        SOLDERING_PLACES.add(new Coordinate(264, 45));
+        SOLDERING_PLACES.add(new Coordinate(328, 45));
+        SOLDERING_PLACES.add(new Coordinate(392, 45));
     }
 
     private static long _overallElapsedTime;
@@ -46,7 +50,7 @@ public class MainApp {
         /* Region Of Interest */
         ROIFilter rf = new ROIFilter(
             sp,
-            new Rectangle(0, 35, 448, 105)
+            new Rectangle(ROI_X, ROI_Y, ROI_WIDTH, ROI_HEIGHT)
         );
 
         /* Threshold all black elements to white */
@@ -88,16 +92,18 @@ public class MainApp {
         /* Writing analysis results to the file */
         activate(new FileSink(
             ccf,
+                MEASUREMENT_ACCURACY,
             SOLDERING_PLACES,
-            new File(RESULT_FILE_PATH)
+            RESULT_FILE_PATH
         ));
     }
 
     private static void runPushTaskA() {
         /* Writing analysis results to the file */
         FileSink fs = new FileSink(
+                MEASUREMENT_ACCURACY,
             SOLDERING_PLACES,
-            new File(RESULT_FILE_PATH)
+            RESULT_FILE_PATH
         );
 
         /* Calculating centroids */
@@ -139,7 +145,7 @@ public class MainApp {
         /* Region Of Interest */
         ROIFilter rf = new ROIFilter(
             (Writable<JAIDrawable>) tf,
-            new Rectangle(0, 35, 448, 105)
+            new Rectangle(ROI_X, ROI_Y, ROI_WIDTH, ROI_HEIGHT)
         );
 
         /* Loading the data */
@@ -165,7 +171,7 @@ public class MainApp {
         activate(new ROIFilter(
             sourcePipe,
             roiPipe,
-            new Rectangle(0, 35, 448, 105)
+            new Rectangle(ROI_X, ROI_Y, ROI_WIDTH, ROI_HEIGHT)
         ));
 
         /* Threshold all black elements to white */
@@ -220,8 +226,9 @@ public class MainApp {
         /* Writing analysis results to the file */
         activate(new FileSink(
             coordinatesPipe,
+                MEASUREMENT_ACCURACY,
             SOLDERING_PLACES,
-            new File(RESULT_FILE_PATH)
+            RESULT_FILE_PATH
         ));
     }
 
@@ -233,8 +240,7 @@ public class MainApp {
             _overallElapsedTime += elapsedTime;
 
             System.out.print(
-                "Time elapsed for THIS task: " + elapsedTime + "ms.\r\n" +
-                "Time elapsed for ALL tasks: " + _overallElapsedTime + "ms."
+                "TIME FOR ALL EXECUTED TASKS |> " + _overallElapsedTime + "\tms.\r\n"
             );
         }).start();
     }

@@ -11,12 +11,10 @@ public class ForwardingFilter<T> extends AbstractFilter <T,T> {
 
     public ForwardingFilter(Readable<T> input, Writable<T> output) throws InvalidParameterException {
         super(input, output);
-
     }
 
     public ForwardingFilter(Readable<T> input) throws InvalidParameterException {
         super(input);
-
     }
 
     public ForwardingFilter(Writable<T> output) throws InvalidParameterException {
@@ -30,8 +28,6 @@ public class ForwardingFilter<T> extends AbstractFilter <T,T> {
     public void write(T value) throws StreamCorruptedException {
         writeOutput(value);
     }
-    
-
 
     public void run() {
         T input = null;
