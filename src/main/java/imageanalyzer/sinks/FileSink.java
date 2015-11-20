@@ -19,6 +19,7 @@ public class FileSink extends ActiveSink<List<Coordinate>> {
     private final List<Coordinate> _targetCentroids;
     private FileWriter _fileWriter;
 
+    /* passive constructor */
     public FileSink(List<Coordinate> centroids, File file)
     throws IOException {
         super();
@@ -32,6 +33,7 @@ public class FileSink extends ActiveSink<List<Coordinate>> {
         }
     }
 
+    /* active construct*/
     public FileSink(Readable<List<Coordinate>> readable, List<Coordinate> centroids, File file)
     throws IOException {
         super(readable);
