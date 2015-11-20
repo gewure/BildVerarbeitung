@@ -92,7 +92,7 @@ public class MainApp {
         /* Writing analysis results to the file */
         activate(new FileSink(
             ccf,
-                MEASUREMENT_ACCURACY,
+            MEASUREMENT_ACCURACY,
             SOLDERING_PLACES,
             RESULT_FILE_PATH
         ));
@@ -101,7 +101,7 @@ public class MainApp {
     private static void runPushTaskA() {
         /* Writing analysis results to the file */
         FileSink fs = new FileSink(
-                MEASUREMENT_ACCURACY,
+            MEASUREMENT_ACCURACY,
             SOLDERING_PLACES,
             RESULT_FILE_PATH
         );
@@ -226,7 +226,7 @@ public class MainApp {
         /* Writing analysis results to the file */
         activate(new FileSink(
             coordinatesPipe,
-                MEASUREMENT_ACCURACY,
+            MEASUREMENT_ACCURACY,
             SOLDERING_PLACES,
             RESULT_FILE_PATH
         ));
