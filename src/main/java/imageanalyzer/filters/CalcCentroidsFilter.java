@@ -8,32 +8,37 @@ import thirdparty.interfaces.Writable;
 import javax.media.jai.PlanarImage;
 import java.awt.image.BufferedImage;
 import java.security.InvalidParameterException;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.LinkedList;
+import java.util.*;
 
 /**
  * This filter expects the bonding discs to be completely white: pixel value of 255 on a scale of 0..255
  * all other pixels in the image are expected to have a pixel value < 255
  * use this filter adapting eventually the package name
  */
-public class CalcCentroidsFilter extends DataEnrichmentFilter<PlanarImage, LinkedList<Coordinate>>{
+public class CalcCentroidsFilter extends DataEnrichmentFilter<PlanarImage, List<Coordinate>>{
 
-	private HashMap<Coordinate, Boolean> _general = new HashMap<>();
-	private LinkedList<LinkedList<Coordinate>> _figures = new LinkedList<>();
+	private Map<Coordinate, Boolean> _general = new HashMap<>();
+	private List<List<Coordinate>> _figures = new LinkedList<>();
 	private PlanarImage _image;
 
+	public CalcCentroidsFilter(Readable<PlanarImage> input, Writable<List<Coordinate>> output)
+	throws InvalidParameterException {
+		super(input, output);
+	}
 
-	public CalcCentroidsFilter(Readable<PlanarImage> input) throws InvalidParameterException {
+
+	public CalcCentroidsFilter(Readable<PlanarImage> input)
+	throws InvalidParameterException {
 		super(input);
 	}
 
-	public CalcCentroidsFilter(Writable<LinkedList<Coordinate>> output) throws InvalidParameterException {
+	public CalcCentroidsFilter(Writable<List<Coordinate>> output)
+	throws InvalidParameterException {
 		super(output);
 	}
 
 	@Override
-	protected boolean fillEntity(PlanarImage nextVal, LinkedList<Coordinate> entity) {
+	protected boolean fillEntity(PlanarImage nextVal, List<Coordinate> entity) {
 		_image = nextVal;
 
 //        Collections.addAll(entity, process(nextVal));
@@ -43,7 +48,7 @@ public class CalcCentroidsFilter extends DataEnrichmentFilter<PlanarImage, Linke
 	}
 
 	@Override
-	protected LinkedList<Coordinate> getNewEntityObject() {
+	protected List<Coordinate> getNewEntityObject() {
 		return new LinkedList<>();
 	}
 
@@ -64,7 +69,7 @@ public class CalcCentroidsFilter extends DataEnrichmentFilter<PlanarImage, Linke
 	}
 
 	private void getNextFigure(BufferedImage img, int x, int y){
-		LinkedList<Coordinate> figure = new LinkedList<>();
+		List<Coordinate> figure = new LinkedList<>();
 		_general.put(new Coordinate(x,y), true);
 		figure.add(new Coordinate(x,y));
 
@@ -73,7 +78,7 @@ public class CalcCentroidsFilter extends DataEnrichmentFilter<PlanarImage, Linke
 		_figures.add(figure);
 	}
 
-	private void addConnectedComponents(BufferedImage img, LinkedList<Coordinate> figure, int x, int y){
+	private void addConnectedComponents(BufferedImage img, List<Coordinate> figure, int x, int y){
 		if (x-1>=0 && _general.containsKey((new Coordinate(x-1, y))) == false && img.getRaster().getSample(x-1, y, 0) == 255){
 			_general.put(new Coordinate(x-1,y), true);
 			figure.add(new Coordinate(x-1, y));
@@ -99,9 +104,9 @@ public class CalcCentroidsFilter extends DataEnrichmentFilter<PlanarImage, Linke
 	private Coordinate[] calculateCentroids(){
 		Coordinate[] centroids = new Coordinate[_figures.size()];
 		int i = 0;
-		for (LinkedList<Coordinate> figure : _figures){
-			LinkedList<Integer> xValues= new LinkedList<>();
-			LinkedList<Integer> yValues= new LinkedList<>();
+		for (List<Coordinate> figure : _figures){
+			List<Integer> xValues = new LinkedList<>();
+			List<Integer> yValues = new LinkedList<>();
 
 			for (Coordinate c : figure){
 				xValues.add(c._x);

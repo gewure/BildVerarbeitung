@@ -13,15 +13,11 @@ import java.util.LinkedList;
  * Created by sereGkaluv on 09-Nov-15.
  */
 public class JAIDrawableSource extends ActiveSource<JAIDrawable> {
-    private final LinkedList<JAIDrawable> _drawableQueue;
-    private final String _filePath;
+    private LinkedList<JAIDrawable> _drawableQueue;
+    private String _filePath;
 
     public JAIDrawableSource(String filePath) {
-        super();
-        _filePath = filePath;
-
-        _drawableQueue = new LinkedList<>();
-        fillDrawableQueue();
+        this(null, filePath);
     }
 
     public JAIDrawableSource(Writable<JAIDrawable> writable, String filePath) {

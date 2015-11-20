@@ -14,24 +14,25 @@ import java.security.InvalidParameterException;
  */
 public class JAIDrawableAdapterFilter extends DataEnrichmentFilter<JAIDrawable, PlanarImage>  {
 
-    public JAIDrawableAdapterFilter(thirdparty.interfaces.Readable<JAIDrawable> input) throws InvalidParameterException {
-        super(input);
-    }
-
-    public JAIDrawableAdapterFilter(Readable<JAIDrawable> input, Writable<PlanarImage> output) throws InvalidParameterException {
+    public JAIDrawableAdapterFilter(Readable<JAIDrawable> input, Writable<PlanarImage> output)
+    throws InvalidParameterException {
         super(input, output);
     }
 
-    public JAIDrawableAdapterFilter(Writable<PlanarImage> output) throws InvalidParameterException {
+    public JAIDrawableAdapterFilter(Readable<JAIDrawable> input)
+    throws InvalidParameterException {
+        super(input);
+    }
+
+    public JAIDrawableAdapterFilter(Writable<PlanarImage> output)
+    throws InvalidParameterException {
         super(output);
     }
 
     /* say true if data has been processed, false if error*/
     @Override
     protected boolean fillEntity(JAIDrawable drawable, PlanarImage entity) {
-        if(drawable!= null)
-            entity = drawable.getDrawable();
-
+        if(drawable!= null) entity = drawable.getDrawable();
         return true;
     }
 

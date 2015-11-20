@@ -1,23 +1,27 @@
 package imageanalyzer;
 
 import imageanalyzer.datacontainers.Coordinate;
-import imageanalyzer.datacontainers.ImageVisualizer;
 import imageanalyzer.datacontainers.JAIDrawable;
 import imageanalyzer.datasources.JAIDrawableSource;
 import imageanalyzer.filters.*;
-import imageanalyzer.sinks.VisualizationSink;
+import imageanalyzer.sinks.FileSink;
 import thirdparty.interfaces.Readable;
 import thirdparty.interfaces.Writable;
+import thirdparty.pipes.BufferedSyncPipe;
 
+import javax.media.jai.PlanarImage;
 import java.awt.*;
+import java.io.File;
+import java.lang.management.ManagementFactory;
 import java.util.LinkedList;
+import java.util.List;
 
 public class MainApp {
-    private static final int BUFFER_SIZE = 1;
+    private static final int BUFFER_SIZE = 4;
     private static final String IMAGE_FILE_PATH = "loetstellen.jpg";
-    private static final String RESULT_TXT = "result.txt";
+    private static final String RESULT_FILE_PATH = "result.txt";
 
-    private static final LinkedList<Coordinate> SOLDERING_PLACES;
+    private static final List<Coordinate> SOLDERING_PLACES;
 
     static {
         SOLDERING_PLACES = new LinkedList<>();
@@ -31,6 +35,8 @@ public class MainApp {
         SOLDERING_PLACES.add(new Coordinate(329, 85));
         SOLDERING_PLACES.add(new Coordinate(396, 85));
     }
+
+    private static long _overallElapsedTime;
 
 
     private static void runPullTaskA() {
@@ -73,18 +79,35 @@ public class MainApp {
         /* Inversion of the result all black -> white, all white -> black */
         InversionFilter inf = new InversionFilter((Readable<JAIDrawable>) bwf);
 
-        /* Showing the result */
-        new Thread(
-            new VisualizationSink(inf, ImageVisualizer::displayImage)
-        ).start();
+        /* Extracting PlanarImage from JAIDrawable container */
+        JAIDrawableAdapterFilter af = new JAIDrawableAdapterFilter(inf);
+
+        /* Calculating centroids */
+        CalcCentroidsFilter ccf = new CalcCentroidsFilter(af);
+
+        /* Writing analysis results to the file */
+        activate(new FileSink(
+            ccf,
+            SOLDERING_PLACES,
+            new File(RESULT_FILE_PATH)
+        ));
     }
 
     private static void runPushTaskA() {
-        /* Showing the result */
-        VisualizationSink vs = new VisualizationSink(ImageVisualizer::displayImage);
+        /* Writing analysis results to the file */
+        FileSink fs = new FileSink(
+            SOLDERING_PLACES,
+            new File(RESULT_FILE_PATH)
+        );
+
+        /* Calculating centroids */
+        CalcCentroidsFilter ccf = new CalcCentroidsFilter(fs);
+
+        /* Extracting PlanarImage from JAIDrawable container */
+        JAIDrawableAdapterFilter af = new JAIDrawableAdapterFilter(ccf);
 
         /* Inversion of the result all black -> white, all white -> black */
-        InversionFilter inf = new InversionFilter(vs);
+        InversionFilter inf = new InversionFilter(af);
 
         /* Threshold Filter all except soldering places to black */
         ThresholdFilter bwf = new ThresholdFilter(
@@ -120,13 +143,100 @@ public class MainApp {
         );
 
         /* Loading the data */
-        new Thread(
-            new JAIDrawableSource(rf, IMAGE_FILE_PATH)
-        ).start();
+        activate(new JAIDrawableSource(rf, IMAGE_FILE_PATH));
     }
 
     private static void runTaskB() {
-        //Threaded!
+        BufferedSyncPipe<JAIDrawable> sourcePipe = new BufferedSyncPipe<>(BUFFER_SIZE);
+        BufferedSyncPipe<JAIDrawable> roiPipe = new BufferedSyncPipe<>(BUFFER_SIZE);
+        BufferedSyncPipe<JAIDrawable> thresholdPipe = new BufferedSyncPipe<>(BUFFER_SIZE);
+        BufferedSyncPipe<JAIDrawable> medianPipe = new BufferedSyncPipe<>(BUFFER_SIZE);
+        BufferedSyncPipe<JAIDrawable> openingPipe = new BufferedSyncPipe<>(BUFFER_SIZE);
+        BufferedSyncPipe<JAIDrawable> blackWhitePipe = new BufferedSyncPipe<>(BUFFER_SIZE);
+        BufferedSyncPipe<JAIDrawable> inversePipe = new BufferedSyncPipe<>(BUFFER_SIZE);
+        BufferedSyncPipe<PlanarImage> adapterPipe = new BufferedSyncPipe<>(BUFFER_SIZE);
+        BufferedSyncPipe<List<Coordinate>> coordinatesPipe = new BufferedSyncPipe<>(BUFFER_SIZE);
+
+
+        /* Loading the data */
+        activate(new JAIDrawableSource(sourcePipe , IMAGE_FILE_PATH));
+
+        /* Region Of Interest */
+        activate(new ROIFilter(
+            sourcePipe,
+            roiPipe,
+            new Rectangle(0, 35, 448, 105)
+        ));
+
+        /* Threshold all black elements to white */
+        activate(new ThresholdFilter(
+            roiPipe,
+            thresholdPipe,
+            new double[] {0},
+            new double[] {25},
+            new double[] {255}
+        ));
+
+        /* Median to eliminate noise */
+        activate(new MedianFilter(
+            thresholdPipe,
+            medianPipe,
+            8
+        ));
+
+        /* Mark circle-like regions (soldering places) */
+        activate(new OpeningFilter(
+            medianPipe,
+            openingPipe
+        ));
+
+        /* Threshold Filter all except soldering places to black */
+        activate(new ThresholdFilter(
+            openingPipe,
+            blackWhitePipe,
+            new double[] {0},
+            new double[] {250},
+            new double[] {0}
+        ));
+
+        /* Inversion of the result all black -> white, all white -> black */
+        activate(new InversionFilter(
+            blackWhitePipe,
+            inversePipe
+        ));
+
+        /* Extracting PlanarImage from JAIDrawable container */
+        activate(new JAIDrawableAdapterFilter(
+            inversePipe,
+            adapterPipe
+        ));
+
+        /* Calculating centroids */
+        activate(new CalcCentroidsFilter(
+            adapterPipe,
+            coordinatesPipe
+        ));
+
+        /* Writing analysis results to the file */
+        activate(new FileSink(
+            coordinatesPipe,
+            SOLDERING_PLACES,
+            new File(RESULT_FILE_PATH)
+        ));
+    }
+
+    private static void activate(Runnable runnable) {
+        new Thread(() -> {
+            runnable.run();
+
+            Long elapsedTime = ManagementFactory.getThreadMXBean().getCurrentThreadCpuTime() / 1000000; //ms.
+            _overallElapsedTime += elapsedTime;
+
+            System.out.print(
+                "Time elapsed for THIS task: " + elapsedTime + "ms.\r\n" +
+                "Time elapsed for ALL tasks: " + _overallElapsedTime + "ms."
+            );
+        }).start();
     }
 
     public static void main(String[] args) {
