@@ -1,31 +1,28 @@
-package imageanalyzer.filters;
+package imageanalyzer.sinks;
 
 import imageanalyzer.datacontainers.JAIDrawable;
+import imageanalyzer.sinks.generic.ActiveSink;
 import thirdparty.interfaces.Readable;
-import thirdparty.interfaces.Writable;
 
 import javax.media.jai.PlanarImage;
 import java.io.StreamCorruptedException;
-import java.security.InvalidParameterException;
 import java.util.function.Consumer;
 
 /**
  * Created by sereGkaluv on 09-Nov-15.
  */
-public class VisualizationSinkPassive implements Writable<JAIDrawable> {
+public class ActiveVisualizationSink extends ActiveSink<JAIDrawable> {
     private final Consumer<PlanarImage> _visualisationConsumer;
 
-    public VisualizationSinkPassive(Consumer<PlanarImage> visualisationConsumer)
-    throws InvalidParameterException {
+    public ActiveVisualizationSink(Readable<JAIDrawable> readable, Consumer<PlanarImage> visualisationConsumer) {
+        super(readable);
         _visualisationConsumer = visualisationConsumer;
     }
 
     @Override
     public void write(JAIDrawable value) throws StreamCorruptedException {
-        if (_visualisationConsumer != null) {
+        if (value != null && _visualisationConsumer != null) {
             _visualisationConsumer.accept(value.getDrawable());
-        } else {
-            throw new NullPointerException("visualisation consumer is not registered");
         }
     }
 }

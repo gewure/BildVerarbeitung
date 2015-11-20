@@ -3,27 +3,41 @@ package imageanalyzer;
 import imageanalyzer.datacontainers.Coordinate;
 import imageanalyzer.datacontainers.ImageVisualizer;
 import imageanalyzer.datacontainers.JAIDrawable;
+import imageanalyzer.datasources.JAIDrawableSourceActive;
+import imageanalyzer.datasources.JAIDrawableSourcePassive;
 import imageanalyzer.filters.*;
-import imageanalyzer.filters.SourcePassive;
+import imageanalyzer.sinks.ActiveVisualizationSink;
+import imageanalyzer.sinks.PassiveVisualizationSink;
 import thirdparty.interfaces.Readable;
 import thirdparty.interfaces.Writable;
-import imageanalyzer.pipes.Pipe;
 
 import java.awt.*;
-import java.io.File;
-import java.io.StreamCorruptedException;
 import java.util.LinkedList;
 
-
 public class MainApp {
-
     private static final int BUFFER_SIZE = 1;
     private static final String IMAGE_FILE_PATH = "loetstellen.jpg";
     private static final String RESULT_TXT = "result.txt";
 
+    private static final LinkedList<Coordinate> SOLDERING_PLACES;
+
+    static {
+        SOLDERING_PLACES = new LinkedList<>();
+
+        /* the should-coordinates of the soldering places */
+        SOLDERING_PLACES.add(new Coordinate(8, 80));
+        SOLDERING_PLACES.add(new Coordinate(72, 80));
+        SOLDERING_PLACES.add(new Coordinate(137, 83));
+        SOLDERING_PLACES.add(new Coordinate(203, 84));
+        SOLDERING_PLACES.add(new Coordinate(266, 85));
+        SOLDERING_PLACES.add(new Coordinate(329, 85));
+        SOLDERING_PLACES.add(new Coordinate(396, 85));
+    }
+
+
     private static void runPullTaskA() {
         /* Loading the data */
-        SourcePassive sp = new SourcePassive(IMAGE_FILE_PATH);
+        JAIDrawableSourcePassive sp = new JAIDrawableSourcePassive(IMAGE_FILE_PATH);
 
         /* Region Of Interest */
         ROIFilter rf = new ROIFilter(
@@ -63,13 +77,13 @@ public class MainApp {
 
         /* Showing the result */
         new Thread(
-            new VisualizationSinkActive(inf, ImageVisualizer::displayImage)
+            new ActiveVisualizationSink(inf, ImageVisualizer::displayImage)
         ).start();
     }
 
     private static void runPushTaskA() {
         /* Showing the result */
-        VisualizationSinkPassive vf = new VisualizationSinkPassive(ImageVisualizer::displayImage);
+        PassiveVisualizationSink vf = new PassiveVisualizationSink(ImageVisualizer::displayImage);
 
         /* Inversion of the result all black -> white, all white -> black */
         InversionFilter inf = new InversionFilter(vf);
@@ -109,27 +123,33 @@ public class MainApp {
 
         /* Loading the data */
         new Thread(
-            new SourceActive(rf, IMAGE_FILE_PATH)
+            new JAIDrawableSourceActive(rf, IMAGE_FILE_PATH)
         ).start();
     }
 
-    private static void taskB() {
+    private static void runTaskB() {
         //Threaded!
     }
 
-    @Deprecated
     public static void main(String[] args) {
+        if (args != null && args.length > 0) {
 
-        /* the should-coordinates of the soldering places */
-        LinkedList<Coordinate> solderingPlaces = new LinkedList<>();
-        solderingPlaces.add(new Coordinate(8, 80));
-        solderingPlaces.add(new Coordinate(72, 80));
-        solderingPlaces.add(new Coordinate(137, 83));
-        solderingPlaces.add(new Coordinate(203, 84));
-        solderingPlaces.add(new Coordinate(266, 85));
-        solderingPlaces.add(new Coordinate(329, 85));
-        solderingPlaces.add(new Coordinate(396, 85));
+            switch (args[0]) {
+                case "push" : {
+                    runPushTaskA();
+                    return;
+                }
 
-        runPushTaskA();
+                case "pull" : {
+                    runPullTaskA();
+                    return;
+                }
+
+                case "threaded" : {
+                    runTaskB();
+                    return;
+                }
+            }
+        }
     }
 }

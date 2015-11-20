@@ -1,8 +1,8 @@
 package imageanalyzer.pipes;
 
 import thirdparty.interfaces.IOable;
-import thirdparty.interfaces.Writable;
 import thirdparty.interfaces.Readable;
+import thirdparty.interfaces.Writable;
 
 import java.io.StreamCorruptedException;
 import java.security.InvalidParameterException;
@@ -11,39 +11,38 @@ import java.security.InvalidParameterException;
  * Created by sereGkaluv on 16-Nov-15.
  */
 public class Pipe<T> implements IOable<T, T> {
-    private Readable<T> input;
-    private Writable<T> output;
+    private Readable<T> _input;
+    private Writable<T> _output;
 
     public Pipe(Readable<T> input, Writable<T> output)
     throws InvalidParameterException {
-
-        this.input = input;
-        this.output = output;
+        _input = input;
+        _output = output;
     }
 
     public Pipe(Readable<T> input)
     throws InvalidParameterException {
-
+        _input = input;
     }
 
     public Pipe(Writable<T> output)
     throws InvalidParameterException {
-
+        _output = output;
     }
 
     @Override
     public T read() throws StreamCorruptedException {
-        if (input == null) {
+        if (_input == null) {
             throw new StreamCorruptedException();
         }
-        return input.read();
+        return _input.read();
     }
 
     @Override
     public void write(T value) throws StreamCorruptedException {
-        if (output == null) {
+        if (_output == null) {
             throw new StreamCorruptedException();
         }
-        output.write(value);
+        _output.write(value);
     }
 }
