@@ -44,7 +44,7 @@ public class FileSink extends ActiveSink<List<Coordinate>> {
     public void write(List<Coordinate> isSolderingPlaces) throws StreamCorruptedException {
         try {
 
-            if (_shouldSolderingPlaces != null && isSolderingPlaces != null) {
+            if (_shouldSolderingPlaces != null && isSolderingPlaces != null && !isSolderingPlaces.isEmpty()) {
 
                 for (int i = 0; i < _shouldSolderingPlaces.size(); ++i) {
 
@@ -55,11 +55,12 @@ public class FileSink extends ActiveSink<List<Coordinate>> {
 
                         if (isInAccuracyRange(is, should)) {
                             _fileWriter.write("PASSED. Soldering place #" + i + " is in the accuracy range.\r\n");
-                            _fileWriter.write(getCoordinatesString(is, should));
                         } else {
                             _fileWriter.write("FAILED. Soldering place #" + i + " is out of the accuracy range.\r\n");
-                            _fileWriter.write(getCoordinatesString(is, should));
                         }
+
+                        _fileWriter.write(getCoordinatesString(is, should));
+
                     } else {
                         _fileWriter.write("FAILED. Soldering place #" + i + " was not detected.\r\n\r\n");
                     }
@@ -68,6 +69,13 @@ public class FileSink extends ActiveSink<List<Coordinate>> {
                 _fileWriter.flush();
 
             } else if (_fileWriter != null){
+
+                if (isSolderingPlaces != null && isSolderingPlaces.isEmpty()) {
+                    _fileWriter.write(
+                        "INFO. Empty coordinates list received. It is ok for the end of the stream.\r\n\r\n"
+                    );
+                }
+
                 _fileWriter.close();
                 _fileWriter = null;
             }

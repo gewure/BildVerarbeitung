@@ -8,6 +8,7 @@ import thirdparty.interfaces.Writable;
 
 import javax.media.jai.PlanarImage;
 import java.awt.image.Raster;
+import java.io.StreamCorruptedException;
 import java.security.InvalidParameterException;
 import java.util.*;
 
@@ -39,6 +40,15 @@ public class CalcCentroidsFilter extends DataEnrichmentFilter<PlanarImage, List<
 
     @Override
     protected boolean fillEntity(PlanarImage nextVal, List<Coordinate> entity) {
+        if (nextVal == null) {
+            try {
+                sendEndSignal();
+                return true;
+            } catch (StreamCorruptedException e) {
+                e.printStackTrace();
+            }
+        }
+
         entity.addAll(process(nextVal));
         return true;
     }
@@ -119,7 +129,7 @@ public class CalcCentroidsFilter extends DataEnrichmentFilter<PlanarImage, List<
             centroids.add(new Coordinate(xA, yA));
         }
 
-        return centroids;
+        return !centroids.isEmpty() ? centroids : null;
     }
 
     private boolean isInBounds(Coordinate coordinate, Raster raster) {
