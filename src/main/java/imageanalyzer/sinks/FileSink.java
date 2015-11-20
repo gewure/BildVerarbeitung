@@ -95,8 +95,8 @@ public class FileSink extends ActiveSink<List<Coordinate>> {
      *         false if it lays elsewhere.
      */
     private boolean isInAccuracyRange(Coordinate is, Coordinate should) {
-        boolean isInRangeX = Math.abs(should._x - is._x) < _accuracy;
-        boolean isInRangeY = Math.abs(should._y - is._y) < _accuracy;
+        boolean isInRangeX = Math.abs(should._x - is._x) <= _accuracy;
+        boolean isInRangeY = Math.abs(should._y - is._y) <= _accuracy;
 
         return isInRangeX && isInRangeY;
     }
