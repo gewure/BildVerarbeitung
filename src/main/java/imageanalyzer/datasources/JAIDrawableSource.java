@@ -35,6 +35,7 @@ public class JAIDrawableSource extends ActiveSource<JAIDrawable> {
     }
 
     private void fillDrawableQueue() {
+        //Source queue, contains all drawable elements.
         _drawableQueue.add(
             new JAIDrawable(JAI.create(
                 JAIOperators.FILE_LOAD.getOperatorValue(),

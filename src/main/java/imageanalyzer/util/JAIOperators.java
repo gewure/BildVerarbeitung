@@ -18,6 +18,11 @@ public enum JAIOperators {
         _operatorValue = operatorValue;
     }
 
+    /**
+     * Returns operator in JAI friendly format.
+     *
+     * @return JAI operator.
+     */
     public String getOperatorValue() {
         return _operatorValue;
     }

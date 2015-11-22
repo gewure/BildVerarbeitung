@@ -16,32 +16,32 @@ public class ImageVisualizer {
     }
 
     public static void displayImage(PlanarImage image) {
-        // Get some information about the image
+        //Get some information about the image.
         String imageInfo = "Dimensions: " + image.getWidth() + "x" + image.getHeight() + " Bands:" + image.getNumBands();
 
-        // Create a frame for display.
+        //Create a frame for display.
         JFrame frame = new JFrame();
         frame.setTitle(WINDOW_TITLE);
 
-        // Get the JFrame ContentPane.
+        //Get the JFrame ContentPane.
         Container contentPane = frame.getContentPane();
         contentPane.setLayout(new BorderLayout());
 
-        // Create an instance of DisplayJAI.
+        //Create an instance of DisplayJAI.
         DisplayJAI dj = new DisplayJAI(image);
 
-        // Add to the JFrame ContentPane an instance of JScrollPane
-        // containing the DisplayJAI instance.
+        //Add to the JFrame ContentPane an instance of JScrollPane
+        //containing the DisplayJAI instance.
         contentPane.add(new JScrollPane(dj), BorderLayout.CENTER);
 
-        // Add a text label with the image information.
+        //Add a text label with the image information.
         contentPane.add(new JLabel(imageInfo), BorderLayout.SOUTH);
 
-        // Set the closing operation so the application is finished.
+        //Set the closing operation so the application is finished.
         frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         frame.pack();
 
         frame.setResizable(false);
-        frame.setVisible(true); // show the frame.
+        frame.setVisible(true); //Show the frame.
     }
 }

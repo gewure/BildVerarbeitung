@@ -34,13 +34,14 @@ public class InversionFilter extends DataTransformationFilter<JAIDrawable> {
 
     @Override
     protected void process(JAIDrawable image) {
-        //inverting colors on the picture
-
+        //Creating a new Planar Image according to parameter block, applying JAI Operator (filter)
+        //and saving the result to JAIDrawable container. (inverses colors on the picture)
         image.setDrawable(JAI.create(
             JAIOperators.INVERT.getOperatorValue(),
             image.getDrawable()
         ));
 
+        //Saving the current process as a file.
         JAIHelper.saveImage(image.getDrawable(), FILTER_NAME);
     }
 }

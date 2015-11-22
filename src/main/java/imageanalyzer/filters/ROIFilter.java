@@ -39,13 +39,18 @@ public class ROIFilter extends DataTransformationFilter<JAIDrawable> {
 
     @Override
     protected void process(JAIDrawable image) {
-        image.setDrawable(PlanarImage.wrapRenderedImage(
+        //Recreating a new Planar Image cropped by given _roi Rectangle.
+        PlanarImage roiImage = PlanarImage.wrapRenderedImage(
             image.getDrawable().getAsBufferedImage(
                 _roi,
                 image.getDrawable().getColorModel()
             )
-        ));
+        );
 
+        //Saving the result to JAIDrawable container.
+        image.setDrawable(roiImage);
+
+        //Saving the current process as a file.
         JAIHelper.saveImage(image.getDrawable(), FILTER_NAME);
     }
 }

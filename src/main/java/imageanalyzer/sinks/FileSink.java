@@ -30,9 +30,9 @@ public class FileSink extends ActiveSink<List<Coordinate>> {
 
         try {
 
-            _fileWriter = new BufferedWriter(Files.newBufferedWriter(Paths.get(filePath)));
             System.out.println("Saving results in: " + filePath);
 
+            _fileWriter = new BufferedWriter(Files.newBufferedWriter(Paths.get(filePath)));
             _fileWriter.write("Registered accuracy: " + accuracy + "\r\n\r\n");
 
         } catch (IOException e) {
@@ -50,9 +50,11 @@ public class FileSink extends ActiveSink<List<Coordinate>> {
 
                     Coordinate should = _shouldSolderingPlaces.get(i);
 
+                    //Check if 'is' list is big enough according to should list.
                     if(i < isSolderingPlaces.size()) {
                         Coordinate is = isSolderingPlaces.get(i);
 
+                        //Checking if 'is' value is in 'should' accuracy range.
                         if (isInAccuracyRange(is, should)) {
                             _fileWriter.write("PASSED. Soldering place #" + i + " is in the accuracy range.\r\n");
                         } else {
@@ -70,6 +72,7 @@ public class FileSink extends ActiveSink<List<Coordinate>> {
 
             } else if (_fileWriter != null){
 
+                //End signal detected closing the stream.
                 if (isSolderingPlaces != null && isSolderingPlaces.isEmpty()) {
                     _fileWriter.write(
                         "INFO. Empty coordinates list received. It is ok for the end of the stream.\r\n\r\n"
@@ -101,6 +104,14 @@ public class FileSink extends ActiveSink<List<Coordinate>> {
         return isInRangeX && isInRangeY;
     }
 
+    /**
+     * Prepares Coordinate comparison string.
+     *
+     * @param is calculated coordinate.
+     * @param should expected value for this coordinate.
+     *
+     * @return Coordinate comparison string
+     */
     private String getCoordinatesString(Coordinate is, Coordinate should) {
         return "INFO. Expected [" + should._x + ", " + should._y + "] | Received [" + is._x + ", " + is._y + "]\r\n\r\n";
     }

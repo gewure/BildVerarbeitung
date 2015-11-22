@@ -41,14 +41,26 @@ public class ThresholdFilter extends DataTransformationFilter<JAIDrawable> {
     @Override
     protected void process(JAIDrawable image) {
         ParameterBlock pb = prepareParameterBlock(image, _parameters);
+
+        //Creating a new Planar Image according to parameter block, applying JAI Operator (filter)
+        //and saving the result to JAIDrawable container.
         image.setDrawable(JAI.create(
             JAIOperators.THRESHOLD.getOperatorValue(),
             pb
         ));
 
+        //Saving the current process as a file.
         JAIHelper.saveImage(image.getDrawable(), FILTER_NAME);
     }
 
+    /**
+     * Prepares parameter block.
+     *
+     * @param image source image
+     * @param parameters array of double parameters. 1 element - color from, 2 element - color to,
+     *                   3 element - color value that will replace all colors in range between 1 and 2 element
+     * @return New instance of prepared parameter block
+     */
     private ParameterBlock prepareParameterBlock(JAIDrawable image, double[]... parameters) {
         ParameterBlock pb = new ParameterBlock();
 

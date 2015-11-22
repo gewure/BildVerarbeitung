@@ -13,8 +13,8 @@ import java.security.InvalidParameterException;
 import java.util.*;
 
 /**
- * This filter expects the bonding discs to be completely white: pixel value of 255 on a scale of 0..255
- * all other pixels in the image are expected to have a pixel value < 255
+ * This filter expects the bonding discs to be completely black: pixel value of 0 on a scale of 0..255
+ * all other pixels in the image are expected to have a pixel value > 0
  * use this filter adapting eventually the package name
  */
 public class CalcCentroidsFilter extends DataEnrichmentFilter<PlanarImage, List<Coordinate>> {
@@ -68,14 +68,15 @@ public class CalcCentroidsFilter extends DataEnrichmentFilter<PlanarImage, List<
 
                     Coordinate coordinate = new Coordinate(x, y);
                     if(!CLOSED_LIST.contains(coordinate)) {
-                        //if there is a not visited white pixel, save all pixels belonging to the same figure
+                        //If there is a not visited black pixel, save all pixels belonging to the same figure.
                         getNextFigure(coordinate, raster);
                     }
                 }
             }
         }
 
-        return calculateCentroids();    //calculate the centroids of all figures
+        //Calculate the centroids of all figures.
+        return calculateCentroids();
     }
 
     private void getNextFigure(Coordinate startCoordinate, Raster raster) {
@@ -85,7 +86,7 @@ public class CalcCentroidsFilter extends DataEnrichmentFilter<PlanarImage, List<
         FIGURES.add(figure);
     }
 
-    /* Deep recursion is replaced with queue processing. No more problems with stack overflow. */
+    //Deep recursion is replaced with queue processing. No more problems with stack overflow.
     private void addConnectedComponents(List<Coordinate> figure, Coordinate startCoordinate, Raster raster) {
         final LinkedList<Coordinate> queue = new LinkedList<>();
         queue.add(startCoordinate);
@@ -93,14 +94,14 @@ public class CalcCentroidsFilter extends DataEnrichmentFilter<PlanarImage, List<
         while (!queue.isEmpty()) {
             final Coordinate c = queue.pollFirst();
 
-            /* Checking if current coordinate is not out bounds, and color on targeted pixel == TARGET_COLOR, */
+            //Checking if current coordinate is not out bounds, and color on targeted pixel == TARGET_COLOR.
             if (isInBounds(c, raster) && isPixelOfColor(c._x, c._y, raster, TARGET_COLOR) && !CLOSED_LIST.contains(c)) {
 
-                /* Marking coordinate as visited and adding it to figure, */
+                //Marking coordinate as visited and adding it to figure.
                 CLOSED_LIST.add(c);
                 figure.add(c);
 
-                /* Generating new possible coordinates for future checks. */
+                //Generating new possible coordinates for future checks.
                 queue.add(new Coordinate(c._x - 1, c._y));
                 queue.add(new Coordinate(c._x + 1, c._y));
                 queue.add(new Coordinate(c._x, c._y - 1));
@@ -114,7 +115,7 @@ public class CalcCentroidsFilter extends DataEnrichmentFilter<PlanarImage, List<
 
         for (List<Coordinate> figure : FIGURES) {
 
-            /* Finding average coordinate */
+            //Finding average coordinate.
             int xA = 0;
             int yA = 0;
 

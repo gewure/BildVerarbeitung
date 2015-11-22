@@ -9,9 +9,16 @@ import javax.media.jai.PlanarImage;
 public class JAIHelper {
     private static final String FILE_OUTPUT_FORMAT = "JPEG";
 
-    public static void saveImage(PlanarImage image, String filterName) {
-        String fileOutputPath = filterName + "." + FILE_OUTPUT_FORMAT;
+    /**
+     * Saves planar image to local storage.
+     *
+     * @param image image to be saved.
+     * @param name preferred name of the file.
+     */
+    public static void saveImage(PlanarImage image, String name) {
+        String fileOutputPath = name + "." + FILE_OUTPUT_FORMAT;
 
+        //Saves image.
         JAI.create(
             JAIOperators.FILE_STORE.getOperatorValue(),
             image,

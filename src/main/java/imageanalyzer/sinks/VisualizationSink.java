@@ -27,6 +27,7 @@ public class VisualizationSink extends ActiveSink<JAIDrawable> {
     @Override
     public void write(JAIDrawable value) throws StreamCorruptedException {
         if (value != null && _visualisationConsumer != null) {
+            //Displays awt frame with content of JAIDrawable in it.
             _visualisationConsumer.accept(value.getDrawable());
         }
     }

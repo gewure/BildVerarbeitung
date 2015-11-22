@@ -56,21 +56,22 @@ public class OpeningFilter extends DataTransformationFilter<JAIDrawable> {
 
     @Override
     protected void process(JAIDrawable image) {
-        image.setDrawable(
-            performTransformationStep(JAIOperators.ERODE, image)
-        );
+        //Eroding and Dilating (Opening) source image.
+        PlanarImage erodedImage = performTransformationStep(JAIOperators.ERODE, image.getDrawable());
+        PlanarImage dilatedImage = performTransformationStep(JAIOperators.DILATE, erodedImage);
 
-        image.setDrawable(
-            performTransformationStep(JAIOperators.DILATE, image)
-        );
+        //Saving the result to JAIDrawable container.
+        image.setDrawable(dilatedImage);
 
+        //Saving the current process as a file.
         JAIHelper.saveImage(image.getDrawable(), FILTER_NAME);
     }
 
-    private PlanarImage performTransformationStep(JAIOperators operator, JAIDrawable image) {
-         return JAI.create(
+    private PlanarImage performTransformationStep(JAIOperators operator, PlanarImage image) {
+        //Transforming image according to the given JAI operator.
+        return JAI.create(
              operator.getOperatorValue(),
-             new ParameterBlock().add(KERNEL).addSource(image.getDrawable())
+             new ParameterBlock().add(KERNEL).addSource(image)
          );
     }
 }

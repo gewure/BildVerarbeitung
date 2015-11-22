@@ -10,7 +10,7 @@ import java.io.StreamCorruptedException;
 import java.security.InvalidParameterException;
 
 /**
- * Created by sereGkaluv on 20.11.15.
+ * Created by sereGkaluv on 20-Nov-15.
  */
 public class JAIDrawableAdapterFilter extends AbstractFilter<JAIDrawable, PlanarImage> {
 
@@ -33,13 +33,19 @@ public class JAIDrawableAdapterFilter extends AbstractFilter<JAIDrawable, Planar
     public PlanarImage read()
     throws StreamCorruptedException {
         JAIDrawable input = readInput();
-        return input != null ? input.getDrawable() : null;
+
+        //Forwarding Planar Image from JAIDrawable container.
+        if (input != null && input.getDrawable() != null) {
+            return input.getDrawable();
+        }
+        return null;
     }
 
     @Override
     public void write(JAIDrawable drawable)
     throws StreamCorruptedException {
-        if (drawable != null) {
+        //Forwarding Planar Image from JAIDrawable container.
+        if (drawable != null && drawable.getDrawable() != null) {
             writeOutput(drawable.getDrawable());
         } else {
             sendEndSignal();
