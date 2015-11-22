@@ -5,8 +5,6 @@ package imageanalyzer.util;
  */
 public enum JAIOperators {
     THRESHOLD("threshold"),
-    THRESHOLD_X("ThresholdX"),
-    THRESHOLD_Y("ThresholdY"),
     MEDIAN("MedianFilter"),
     ERODE("erode"),
     DILATE("dilate"),
