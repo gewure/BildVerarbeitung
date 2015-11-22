@@ -8,6 +8,7 @@ import thirdparty.interfaces.Readable;
 import thirdparty.interfaces.Writable;
 
 import javax.media.jai.JAI;
+import javax.media.jai.PlanarImage;
 import java.security.InvalidParameterException;
 
 /**
@@ -35,13 +36,37 @@ public class InversionFilter extends DataTransformationFilter<JAIDrawable> {
     @Override
     protected void process(JAIDrawable image) {
         //Creating a new Planar Image according to parameter block, applying JAI Operator (filter)
-        //and saving the result to JAIDrawable container. (inverses colors on the picture)
-        image.setDrawable(JAI.create(
+        //(inverses colors on the picture)
+        PlanarImage newImage = JAI.create(
             JAIOperators.INVERT.getOperatorValue(),
             image.getDrawable()
-        ));
+        );
+
+        //Coping image properties.
+        copyImageProperties(image.getDrawable(), newImage);
+
+        //Saving the result to JAIDrawable container.
+        image.setDrawable(newImage);
 
         //Saving the current process as a file.
         JAIHelper.saveImage(image.getDrawable(), FILTER_NAME);
+    }
+
+    /**
+     * Copies all the parameters from source to new image.
+     *
+     * @param sourceImage image from which properties will be copied.
+     * @param newImage image to which properties will be copied.
+     */
+    private void copyImageProperties(PlanarImage sourceImage, PlanarImage newImage) {
+        newImage.setProperty(
+            JAIOperators.THRESHOLD_X.getOperatorValue(),
+            sourceImage.getProperty(JAIOperators.THRESHOLD_X.getOperatorValue())
+        );
+
+        newImage.setProperty(
+            JAIOperators.THRESHOLD_Y.getOperatorValue(),
+            sourceImage.getProperty(JAIOperators.THRESHOLD_Y.getOperatorValue())
+        );
     }
 }

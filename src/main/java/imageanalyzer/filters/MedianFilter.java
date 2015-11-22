@@ -8,6 +8,7 @@ import thirdparty.interfaces.Readable;
 import thirdparty.interfaces.Writable;
 
 import javax.media.jai.JAI;
+import javax.media.jai.PlanarImage;
 import javax.media.jai.operator.MedianFilterDescriptor;
 import java.awt.image.renderable.ParameterBlock;
 import java.security.InvalidParameterException;
@@ -44,11 +45,16 @@ public class MedianFilter extends DataTransformationFilter<JAIDrawable> {
         ParameterBlock pb = prepareParameterBlock(image, _maskSize);
 
         //Creating a new Planar Image according to parameter block
-        //and saving the result to JAIDrawable container.
-        image.setDrawable(JAI.create(
+        PlanarImage newImage = JAI.create(
             JAIOperators.MEDIAN.getOperatorValue(),
             pb
-        ));
+        );
+
+        //Coping image properties.
+        copyImageProperties(image.getDrawable(), newImage);
+
+        //Saving the result to JAIDrawable container.
+        image.setDrawable(newImage);
 
         //Saving the current process as a file.
         JAIHelper.saveImage(image.getDrawable(), FILTER_NAME);
@@ -66,5 +72,23 @@ public class MedianFilter extends DataTransformationFilter<JAIDrawable> {
             .add(MedianFilterDescriptor.MEDIAN_MASK_PLUS)
             .add(maskSize)
             .addSource(image.getDrawable());
+    }
+
+    /**
+     * Copies all the parameters from source to new image.
+     *
+     * @param sourceImage image from which properties will be copied.
+     * @param newImage image to which properties will be copied.
+     */
+    private void copyImageProperties(PlanarImage sourceImage, PlanarImage newImage) {
+        newImage.setProperty(
+            JAIOperators.THRESHOLD_X.getOperatorValue(),
+            sourceImage.getProperty(JAIOperators.THRESHOLD_X.getOperatorValue())
+        );
+
+        newImage.setProperty(
+            JAIOperators.THRESHOLD_Y.getOperatorValue(),
+            sourceImage.getProperty(JAIOperators.THRESHOLD_Y.getOperatorValue())
+        );
     }
 }

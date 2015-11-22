@@ -2,6 +2,7 @@ package imageanalyzer.filters;
 
 import imageanalyzer.datacontainers.JAIDrawable;
 import imageanalyzer.util.JAIHelper;
+import imageanalyzer.util.JAIOperators;
 import thirdparty.filter.DataTransformationFilter;
 import thirdparty.interfaces.Readable;
 import thirdparty.interfaces.Writable;
@@ -46,6 +47,10 @@ public class ROIFilter extends DataTransformationFilter<JAIDrawable> {
                 image.getDrawable().getColorModel()
             )
         );
+
+        //Setting shift value to planar image.
+        roiImage.setProperty(JAIOperators.THRESHOLD_X.getOperatorValue(), _roi.getX());
+        roiImage.setProperty(JAIOperators.THRESHOLD_Y.getOperatorValue(), _roi.getY());
 
         //Saving the result to JAIDrawable container.
         image.setDrawable(roiImage);

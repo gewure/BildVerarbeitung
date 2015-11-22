@@ -31,13 +31,13 @@ public class MainApp {
         SOLDERING_PLACES = new LinkedList<>();
 
         /* the should-coordinates of the soldering places */
-        SOLDERING_PLACES.add(new Coordinate(7, 45));
-        SOLDERING_PLACES.add(new Coordinate(71, 45));
-        SOLDERING_PLACES.add(new Coordinate(135, 45));
-        SOLDERING_PLACES.add(new Coordinate(199, 45));
-        SOLDERING_PLACES.add(new Coordinate(264, 45));
-        SOLDERING_PLACES.add(new Coordinate(328, 45));
-        SOLDERING_PLACES.add(new Coordinate(392, 45));
+        SOLDERING_PLACES.add(new Coordinate(7, 80));
+        SOLDERING_PLACES.add(new Coordinate(71, 80));
+        SOLDERING_PLACES.add(new Coordinate(135, 80));
+        SOLDERING_PLACES.add(new Coordinate(199, 80));
+        SOLDERING_PLACES.add(new Coordinate(264, 80));
+        SOLDERING_PLACES.add(new Coordinate(328, 80));
+        SOLDERING_PLACES.add(new Coordinate(392, 80));
     }
 
     private static long _overallElapsedTime;

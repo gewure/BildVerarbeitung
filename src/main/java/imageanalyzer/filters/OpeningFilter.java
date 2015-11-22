@@ -60,6 +60,9 @@ public class OpeningFilter extends DataTransformationFilter<JAIDrawable> {
         PlanarImage erodedImage = performTransformationStep(JAIOperators.ERODE, image.getDrawable());
         PlanarImage dilatedImage = performTransformationStep(JAIOperators.DILATE, erodedImage);
 
+        //Coping image properties.
+        copyImageProperties(image.getDrawable(), dilatedImage);
+
         //Saving the result to JAIDrawable container.
         image.setDrawable(dilatedImage);
 
@@ -67,11 +70,36 @@ public class OpeningFilter extends DataTransformationFilter<JAIDrawable> {
         JAIHelper.saveImage(image.getDrawable(), FILTER_NAME);
     }
 
+    /**
+     * Applies given JAIOperator to given image.
+     *
+     * @param operator JAIOperator to be applied to image.
+     * @param image Image that will be transformed by given JAIOperator.
+     * @return Transformed Planar image
+     */
     private PlanarImage performTransformationStep(JAIOperators operator, PlanarImage image) {
         //Transforming image according to the given JAI operator.
         return JAI.create(
              operator.getOperatorValue(),
              new ParameterBlock().add(KERNEL).addSource(image)
          );
+    }
+
+    /**
+     * Copies all the parameters from source to new image.
+     *
+     * @param sourceImage image from which properties will be copied.
+     * @param newImage image to which properties will be copied.
+     */
+    private void copyImageProperties(PlanarImage sourceImage, PlanarImage newImage) {
+        newImage.setProperty(
+            JAIOperators.THRESHOLD_X.getOperatorValue(),
+            sourceImage.getProperty(JAIOperators.THRESHOLD_X.getOperatorValue())
+        );
+
+        newImage.setProperty(
+            JAIOperators.THRESHOLD_Y.getOperatorValue(),
+            sourceImage.getProperty(JAIOperators.THRESHOLD_Y.getOperatorValue())
+        );
     }
 }

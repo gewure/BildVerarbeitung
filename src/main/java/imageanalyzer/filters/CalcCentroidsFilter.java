@@ -1,6 +1,7 @@
 package imageanalyzer.filters;
 
 import imageanalyzer.datacontainers.Coordinate;
+import imageanalyzer.util.JAIOperators;
 import thirdparty.filter.DataEnrichmentFilter;
 import thirdparty.interfaces.Readable;
 import thirdparty.interfaces.Writable;
@@ -23,6 +24,8 @@ public class CalcCentroidsFilter extends DataEnrichmentFilter<PlanarImage, List<
     private static final Set<Coordinate> CLOSED_LIST = new HashSet<>();
     private static final List<List<Coordinate>> FIGURES = new LinkedList<>();
     private static final int TARGET_COLOR = 0;
+
+    private PlanarImage _image;
 
     public CalcCentroidsFilter(Readable<PlanarImage> input, Writable<List<Coordinate>> output)
     throws InvalidParameterException {
@@ -50,6 +53,8 @@ public class CalcCentroidsFilter extends DataEnrichmentFilter<PlanarImage, List<
                 e.printStackTrace();
             }
         }
+
+        _image = nextVal;
 
         entity.addAll(process(nextVal));
         return true;
@@ -129,7 +134,13 @@ public class CalcCentroidsFilter extends DataEnrichmentFilter<PlanarImage, List<
             xA /= figure.size();
             yA /= figure.size();
 
-            centroids.add(new Coordinate(xA, yA));
+            double thresholdX = (double) _image.getProperty(JAIOperators.THRESHOLD_X.getOperatorValue());
+            double thresholdY = (double) _image.getProperty(JAIOperators.THRESHOLD_Y.getOperatorValue());
+
+            centroids.add(new Coordinate(
+                xA + (int) thresholdX,
+                yA + (int) thresholdY
+            ));
         }
 
         return !centroids.isEmpty() ? centroids : null;
