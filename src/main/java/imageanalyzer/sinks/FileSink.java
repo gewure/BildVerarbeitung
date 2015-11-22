@@ -4,7 +4,9 @@ import imageanalyzer.datacontainers.Coordinate;
 import imageanalyzer.sinks.generic.ActiveSink;
 import thirdparty.interfaces.Readable;
 
-import java.io.*;
+import java.io.BufferedWriter;
+import java.io.IOException;
+import java.io.StreamCorruptedException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.List;

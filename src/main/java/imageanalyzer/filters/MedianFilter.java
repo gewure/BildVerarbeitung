@@ -43,7 +43,7 @@ public class MedianFilter extends DataTransformationFilter<JAIDrawable> {
     protected void process(JAIDrawable image) {
         ParameterBlock pb = prepareParameterBlock(image, _maskSize);
 
-        //Creating a new Planar Image according to parameter block, applying JAI Operator (filter)
+        //Creating a new Planar Image according to parameter block
         //and saving the result to JAIDrawable container.
         image.setDrawable(JAI.create(
             JAIOperators.MEDIAN.getOperatorValue(),

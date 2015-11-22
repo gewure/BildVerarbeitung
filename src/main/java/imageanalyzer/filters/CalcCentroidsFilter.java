@@ -1,7 +1,6 @@
 package imageanalyzer.filters;
 
 import imageanalyzer.datacontainers.Coordinate;
-import imageanalyzer.util.JAIOperators;
 import thirdparty.filter.DataEnrichmentFilter;
 import thirdparty.interfaces.Readable;
 import thirdparty.interfaces.Writable;
@@ -10,7 +9,10 @@ import javax.media.jai.PlanarImage;
 import java.awt.image.Raster;
 import java.io.StreamCorruptedException;
 import java.security.InvalidParameterException;
-import java.util.*;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Set;
 
 /**
  * This filter expects the bonding discs to be completely black: pixel value of 0 on a scale of 0..255

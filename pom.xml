@@ -55,25 +55,32 @@
         </plugins>
     </build>
 
+    <repositories>
+        <repository>
+            <id>repo</id>
+            <url>file://${project.basedir}/libs</url>
+        </repository>
+    </repositories>
+
     <dependencies>
         <dependency>
-            <groupId>jai</groupId>
-            <artifactId>jai.codec</artifactId>
-            <version>1.0</version>
+            <groupId>com.sun.media.jai.codec</groupId>
+            <artifactId>jai_codec</artifactId>
+            <version>1.1.2_01</version>
             <scope>system</scope>
             <systemPath>${project.basedir}/libs/jai_codec.jar</systemPath>
         </dependency>
         <dependency>
-            <groupId>jai</groupId>
-            <artifactId>jai.core</artifactId>
-            <version>1.0</version>
+            <groupId>javax.media.jai</groupId>
+            <artifactId>jai_core</artifactId>
+            <version>1.1.2_01</version>
             <scope>system</scope>
             <systemPath>${project.basedir}/libs/jai_core.jar</systemPath>
         </dependency>
         <dependency>
-            <groupId>jai</groupId>
-            <artifactId>jai.mlibwrapper</artifactId>
-            <version>1.0</version>
+            <groupId>com.sun.medialib.mlib</groupId>
+            <artifactId>mlibwrapper_jai</artifactId>
+            <version>1.1.2</version>
             <scope>system</scope>
             <systemPath>${project.basedir}/libs/mlibwrapper_jai.jar</systemPath>
         </dependency>
